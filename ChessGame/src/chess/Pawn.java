@@ -1,20 +1,20 @@
 package chess;
 
 import java.awt.Image;
-import java.awt.Point;
+import java.util.Map;
 
 public class Pawn extends Piece {
 
-	private Point initialPosition;
+	private String initialPosition;
 
-	public Pawn(Point initialPosition, int armyType, Object[][] board,
-			Image pieceImage) {
-		super(initialPosition, armyType, board, pieceImage);
+	public Pawn(String initialPosition, int armyType,
+			Map<String, Tile> chesschessBoard, Image pieceImage) {
+		super(initialPosition, armyType, chesschessBoard, pieceImage);
 		this.initialPosition = initialPosition;
 	}
 
 	@Override
-	protected void setAvailablePositions(Object[][] board) {
+	protected void setAvailablePositions() {
 		availablePositions.clear();
 
 		final int minStep = 1;
@@ -26,29 +26,26 @@ public class Pawn extends Piece {
 
 		for (int i = minStep; i <= maxStep; i++) {
 			// if white then step is -ve & vice versa
-			Point point = new Point(currentPosition.x + (i * armyType),
-					currentPosition.y);
-
-			if (!isOutOfBounds(point)
-					&& getSquareStatus(point, board) == HAS_NO_PIECE) {
-				availablePositions.add(point);
+			String position = translate(currentPosition, 0, (i * armyType));
+			if (!isOutOfBounds(position)
+					&& getSquareStatus(position) == HAS_NO_PIECE) {
+				availablePositions.add(position);
 			}
 		}
 
 		// if has enemy on the left , the it's available position
-		Point point = new Point(currentPosition.x + (minStep * armyType),
-				currentPosition.y - minStep);
-		if (!isOutOfBounds(point)
-				&& getSquareStatus(point, board) == HAS_ENEMY) {
-			availablePositions.add(point);
+		String position = translate(currentPosition, (minStep * armyType),
+				-minStep * -armyType);
+		if (!isOutOfBounds(position)
+				&& getSquareStatus(position) == HAS_ENEMY) {
+			availablePositions.add(position);
 		}
 
-		// if has enemy on the left , the it's available position
-		point = new Point(currentPosition.x + (minStep * armyType),
-				currentPosition.y + minStep);
-		if (!isOutOfBounds(point)
-				&& getSquareStatus(point, board) == HAS_ENEMY) {
-			availablePositions.add(point);
+		// if has enemy on the right , the it's available position
+		position = translate(currentPosition, minStep* -armyType, (minStep * armyType));
+		if (!isOutOfBounds(position)
+				&& getSquareStatus(position) == HAS_ENEMY) {
+			availablePositions.add(position);
 		}
 	}
 

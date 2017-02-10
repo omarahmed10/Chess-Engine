@@ -2,108 +2,67 @@ package chess;
 
 import java.awt.Image;
 import java.awt.Point;
+import java.util.Map;
 
 public class Bishop extends Piece {
 
-
-	public Bishop(Point initialPosition, int armyType, Object[][] board,
-			Image pieceImage) {
-		super(initialPosition, armyType, board, pieceImage);
+	public Bishop(String initialPosition, int armyType,
+			Map<String, Tile> chesschessBoard, Image pieceImage) {
+		super(initialPosition, armyType, chesschessBoard, pieceImage);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	protected void setAvailablePositions(Object[][] board) {
+	protected void setAvailablePositions() {
 		availablePositions.clear();
 
-		
 		boolean leftUp = true;
 		boolean rightUp = true;
 		boolean leftDown = true;
 		boolean rightDown = true;
 
-		for (int i = BOARD_LOW_LIMIT + 1; i < BOARD_HIGH_LIMIT; i++) {
+		for (int i = 1; i <= 8; i++) {
 			if (leftUp) {
-				Point point = new Point(currentPosition.x, currentPosition.y);
-				point.translate(-i, -i);
+				String position = translate(currentPosition, -i, -i);
 
-				if (!isOutOfBounds(point)) {
-					// if the square is free , then add it
-					if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-						availablePositions.add(point);
-					}
-
-					else {
-						// if the square has an enemy piece , we add the point
-						// and stop
-						// and if it's an ally , then stop
-						if (getSquareStatus(point, board) == HAS_ENEMY)
-							availablePositions.add(point);
-						leftUp = false;
-					}
+				if (!isOutOfBounds(position)) {
+					leftUp = freeSquare(position);
 				}
 
 				else
 					leftUp = false;
 
 			}
-			
+
 			if (rightUp) {
-				Point point = new Point(currentPosition.x, currentPosition.y);
-				point.translate(-i, i);
+				String position = translate(currentPosition, -i, i);
 
-				if (!isOutOfBounds(point)) {
-					if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-						availablePositions.add(point);
-					}
-
-					else {
-						if (getSquareStatus(point, board) == HAS_ENEMY)
-							availablePositions.add(point);
-						rightUp = false;
-					}
+				if (!isOutOfBounds(position)) {
+					rightUp = freeSquare(position);
 				}
 
 				else
 					rightUp = false;
 
 			}
-			
+
 			if (leftDown) {
-				Point point = new Point(currentPosition.x, currentPosition.y);
-				point.translate(i, -i);
+				String position = translate(currentPosition, i, -i);
 
-				if (!isOutOfBounds(point)) {
-					if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-						availablePositions.add(point);
-					}
-
-					else {
-						if (getSquareStatus(point, board) == HAS_ENEMY)
-							availablePositions.add(point);
-						leftDown = false;
-					}
+				if (!isOutOfBounds(position)) {
+					leftDown = freeSquare(position);
 				}
 
 				else
 					leftDown = false;
 
 			}
-			
+
 			if (rightDown) {
-				Point point = new Point(currentPosition.x, currentPosition.y);
-				point.translate(i, i);
+				String position = translate(currentPosition, i, i);
 
-				if (!isOutOfBounds(point)) {
-					if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-						availablePositions.add(point);
-					}
-
-					else {
-						if (getSquareStatus(point, board) == HAS_ENEMY)
-							availablePositions.add(point);
-						rightDown = false;
-					}
+				if (!isOutOfBounds(position)) {
+					rightDown = freeSquare(position);
 				}
 
 				else
@@ -111,6 +70,23 @@ public class Bishop extends Piece {
 
 			}
 		}
+	}
+
+	private boolean freeSquare(String position) {
+		// if the square is free , then add it
+		if (getSquareStatus(position) == HAS_NO_PIECE) {
+			availablePositions.add(position);
+		}
+
+		else {
+			// if the square has an enemy piece , we add the point and stop
+			// and if it's an ally , then stop
+			if (getSquareStatus(position) == HAS_ENEMY) {
+				availablePositions.add(position);
+			}
+			return false;
+		}
+		return true;
 	}
 
 }

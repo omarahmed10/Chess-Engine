@@ -100,65 +100,65 @@ public class Board {
 	 * 
 	 * @return boardSkeleton a 2D object array
 	 */
-	public void drawSkeleton() {
-
-		// white pawns at row 6
-		for (int y = 0; y < 8; y++) {
-			board[6][y] = new Pawn(new Point(6, y), Piece.WHITE_ARMY, board,null);
-		}
-		// black pawns at row 1
-		for (int y = 0; y < 8; y++) {
-			board[1][y] = new Pawn(new Point(1, y), Piece.BLACK_ARMY, board,null);
-		}
-
-		// white rooks at (7,0) & (7,7)
-		board[7][0] = new Rook(new Point(7, 0), Piece.WHITE_ARMY, board,null);
-		board[7][7] = new Rook(new Point(7, 7), Piece.WHITE_ARMY, board,null);
-		// black rooks at (0,0) & (0,7)
-		board[0][0] = new Rook(new Point(0, 0), Piece.BLACK_ARMY, board,null);
-		board[0][7] = new Rook(new Point(0, 7), Piece.BLACK_ARMY, board,null);
-
-		// white knights at (7,1) & (7,6)
-		board[7][1] = new Knight(new Point(7, 1), Piece.WHITE_ARMY, board,null);
-		board[7][6] = new Knight(new Point(7, 6), Piece.WHITE_ARMY, board,null);
-		// black knights at (0,1) & (0,6)
-		board[0][1] = new Knight(new Point(0, 1), Piece.BLACK_ARMY, board,null);
-		board[0][6] = new Knight(new Point(0, 6), Piece.BLACK_ARMY, board,null);
-
-		// white bishops at (7,2) & (7,5)
-		board[7][2] = new Bishop(new Point(7, 2), Piece.WHITE_ARMY, board,null);
-		board[7][5] = new Bishop(new Point(7, 5), Piece.WHITE_ARMY, board,null);
-		// black bishops at (0,2) & (0,5)
-		board[0][2] = new Bishop(new Point(0, 2), Piece.BLACK_ARMY, board,null);
-		board[0][5] = new Bishop(new Point(0, 5), Piece.BLACK_ARMY, board,null);
-
-		// white queen
-		board[7][3] = new Queen(new Point(7, 3), Piece.WHITE_ARMY, board,null);
-		// black queen
-		board[0][3] = new Queen(new Point(0, 3), Piece.BLACK_ARMY, board,null);
-
-		// white king
-		board[7][4] = new King(new Point(7, 4), Piece.WHITE_ARMY, board,null);
-		// black king
-		board[0][4] = new King(new Point(0, 4), Piece.BLACK_ARMY, board,null);
-
-		blackAndWhite();
-
-		for (int i = 0; i < BOARD_HIGH_LIMIT; i++) {
-			for (int j = 0; j < BOARD_HIGH_LIMIT; j++) {
-				try {
-
-					Piece piece = (Piece) board[i][j];
-
-					piece.setAvailablePositions(board);
-				}
-				// if object is not a piece , then it's a free square
-				catch (ClassCastException e) {
-
-				}
-			}
-		}
-	}
+//	public void drawSkeleton() {
+//
+//		// white pawns at row 6
+//		for (int y = 0; y < 8; y++) {
+//			board[6][y] = new Pawn(new Point(6, y), Piece.WHITE_ARMY, board,null);
+//		}
+//		// black pawns at row 1
+//		for (int y = 0; y < 8; y++) {
+//			board[1][y] = new Pawn(new Point(1, y), Piece.BLACK_ARMY, board,null);
+//		}
+//
+//		// white rooks at (7,0) & (7,7)
+//		board[7][0] = new Rook(new Point(7, 0), Piece.WHITE_ARMY, board,null);
+//		board[7][7] = new Rook(new Point(7, 7), Piece.WHITE_ARMY, board,null);
+//		// black rooks at (0,0) & (0,7)
+//		board[0][0] = new Rook(new Point(0, 0), Piece.BLACK_ARMY, board,null);
+//		board[0][7] = new Rook(new Point(0, 7), Piece.BLACK_ARMY, board,null);
+//
+//		// white knights at (7,1) & (7,6)
+//		board[7][1] = new Knight(new Point(7, 1), Piece.WHITE_ARMY, board,null);
+//		board[7][6] = new Knight(new Point(7, 6), Piece.WHITE_ARMY, board,null);
+//		// black knights at (0,1) & (0,6)
+//		board[0][1] = new Knight(new Point(0, 1), Piece.BLACK_ARMY, board,null);
+//		board[0][6] = new Knight(new Point(0, 6), Piece.BLACK_ARMY, board,null);
+//
+//		// white bishops at (7,2) & (7,5)
+//		board[7][2] = new Bishop(new Point(7, 2), Piece.WHITE_ARMY, board,null);
+//		board[7][5] = new Bishop(new Point(7, 5), Piece.WHITE_ARMY, board,null);
+//		// black bishops at (0,2) & (0,5)
+//		board[0][2] = new Bishop(new Point(0, 2), Piece.BLACK_ARMY, board,null);
+//		board[0][5] = new Bishop(new Point(0, 5), Piece.BLACK_ARMY, board,null);
+//
+//		// white queen
+//		board[7][3] = new Queen(new Point(7, 3), Piece.WHITE_ARMY, board,null);
+//		// black queen
+//		board[0][3] = new Queen(new Point(0, 3), Piece.BLACK_ARMY, board,null);
+//
+//		// white king
+//		board[7][4] = new King(new Point(7, 4), Piece.WHITE_ARMY, board,null);
+//		// black king
+//		board[0][4] = new King(new Point(0, 4), Piece.BLACK_ARMY, board,null);
+//
+//		blackAndWhite();
+//
+//		for (int i = 0; i < BOARD_HIGH_LIMIT; i++) {
+//			for (int j = 0; j < BOARD_HIGH_LIMIT; j++) {
+//				try {
+//
+//					Piece piece = (Piece) board[i][j];
+//
+//					piece.setAvailablePositions(board);
+//				}
+//				// if object is not a piece , then it's a free square
+//				catch (ClassCastException e) {
+//
+//				}
+//			}
+//		}
+//	}
 
 	/*
 	 * board 2D object array and draw a 2d string array
@@ -237,24 +237,24 @@ public class Board {
 
 	}
 
-	public boolean makeMove(Point from, Point to) {
-		try {
-			if (((Piece) board[from.x][from.y]).move(to, board, graveyard)) {
-				board[to.x][to.y] = board[from.x][from.y];
-				board[from.x][from.y] = null;
-				blackAndWhite();
-
-				return true;
-			}
-			return false;
-		}
-
-		catch (Exception e) {
-			System.out.println("\nWrong input\n");
-			return false;
-		}
-
-	}
+//	public boolean makeMove(Point from, Point to) {
+//		try {
+//			if (((Piece) board[from.x][from.y]).move(to, board, graveyard)) {
+//				board[to.x][to.y] = board[from.x][from.y];
+//				board[from.x][from.y] = null;
+//				blackAndWhite();
+//
+//				return true;
+//			}
+//			return false;
+//		}
+//
+//		catch (Exception e) {
+//			System.out.println("\nWrong input\n");
+//			return false;
+//		}
+//
+//	}
 
 	public void displayBoard() {
 		for (int i = 0; i < 8; i++) {
@@ -293,7 +293,7 @@ public class Board {
 
 		// Object[][] boardSkeleton = drawSkeleton();
 		// String[][] board = drawBoard(boardSkeleton);
-		board.drawSkeleton();
+//		board.drawSkeleton();
 
 		boolean playerTurn = true; // true if white's turn and vice versa
 		boolean gameEnd = false;
@@ -317,13 +317,13 @@ public class Board {
 				 * "\n\n");
 				 */
 
-				if (board.makeMove(board.adjustPoints(userInput)[0], board.adjustPoints(userInput)[1])) {
-					if (playerTurn) {
-						playerTurn = false;
-					} else {
-						playerTurn = true;
-					}
-				}
+//				if (board.makeMove(board.adjustPoints(userInput)[0], board.adjustPoints(userInput)[1])) {
+//					if (playerTurn) {
+//						playerTurn = false;
+//					} else {
+//						playerTurn = true;
+//					}
+//				}
 
 				/*
 				 * System.out.println("\n\n" + ((Piece)

@@ -2,83 +2,64 @@ package chess;
 
 import java.awt.Image;
 import java.awt.Point;
+import java.util.Map;
 
 public class Rook extends Piece {
 
-
-	public Rook(Point initialPosition, int armyType, Object[][] board,
-			Image pieceImage) {
-		super(initialPosition, armyType, board, pieceImage);
-		// TODO Auto-generated constructor stub
+	public Rook(String initialPosition, int armyType,
+			Map<String, Tile> chesschessBoard, Image pieceImage) {
+		super(initialPosition, armyType, chesschessBoard, pieceImage);
 	}
 
 	@Override
-	protected void setAvailablePositions(Object[][] board) {
+	protected void setAvailablePositions() {
 		availablePositions.clear();
-
-		// all "down" points
-		for (int i = (currentPosition.x + 1); i < BOARD_HIGH_LIMIT; i++) {
-			Point point = new Point(i, currentPosition.y);
-
-			// if the square is free , then add it
-			if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-				availablePositions.add(point);
-			}
-
-			else {
-				// if the square has an enemy piece , we add the point and stop
-				// and if it's an ally , then stop
-				if (getSquareStatus(point, board) == HAS_ENEMY)
-					availablePositions.add(point);
+		
+		int d = (int) currentPosition.charAt(0);
+		int d2 = Integer.parseInt(currentPosition.charAt(1) + "");
+		// all right positions
+		for (int i = d - 65 + 1; i < 8; i++) {
+			String position = (char) (i + 65) + "" + d2;
+			if (!freeSquare(position))
 				break;
-			}
 		}
 
-		// all "up" points
-		for (int i = (currentPosition.x - 1); i >= BOARD_LOW_LIMIT; i--) {
-			Point point = new Point(i, currentPosition.y);
-
-			if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-				availablePositions.add(point);
-			}
-
-			else {
-				if (getSquareStatus(point, board) == HAS_ENEMY)
-					availablePositions.add(point);
+		// all left positions
+		for (int i = d - 65 - 1; i >= 0; i--) {
+			String position = (char) (i + 65) + "" + d2;
+			if (!freeSquare(position))
 				break;
-			}
+		}
+		// all up positions
+		for (int j = d2 + 1; j <= 8; j++) {
+			String position = (char) d + "" + j;
+			if (!freeSquare(position))
+				break;
 		}
 
-		// all "right" points
-		for (int j = (currentPosition.y + 1); j < BOARD_HIGH_LIMIT; j++) {
-			Point point = new Point(currentPosition.x, j);
-
-			if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-				availablePositions.add(point);
-			}
-
-			else {
-				if (getSquareStatus(point, board) == HAS_ENEMY)
-					availablePositions.add(point);
+		// all down position
+		for (int j = d2 - 1; j >= 1; j--) {
+			String position = (char) d + "" + j;
+			if (!freeSquare(position))
 				break;
-			}
-		}
-
-		// all "left" points
-		for (int j = (currentPosition.y - 1); j >= BOARD_LOW_LIMIT; j--) {
-			Point point = new Point(currentPosition.x, j);
-
-			if (getSquareStatus(point, board) == HAS_NO_PIECE) {
-				availablePositions.add(point);
-			}
-
-			else {
-				if (getSquareStatus(point, board) == HAS_ENEMY)
-					availablePositions.add(point);
-				break;
-			}
 		}
 
 	}
 
+	private boolean freeSquare(String position) {
+		// if the square is free , then add it
+		if (getSquareStatus(position) == HAS_NO_PIECE) {
+			availablePositions.add(position);
+		}
+
+		else {
+			// if the square has an enemy piece , we add the point and stop
+			// and if it's an ally , then stop
+			if (getSquareStatus(position) == HAS_ENEMY) {
+				availablePositions.add(position);
+			}
+			return true;
+		}
+		return false;
+	}
 }

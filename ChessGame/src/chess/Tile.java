@@ -6,9 +6,9 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseListener;
-
-import javax.swing.JPanel;
 import javax.swing.UIManager;
+
+import view.ChessBoard;
 
 /**
  * this is the class of single chess tile. the tile is empty on creation until a
@@ -23,23 +23,23 @@ public class Tile implements MouseListener {
 	private Piece myPiece;
 	private final String myPosition;
 	private final int myColor;
-	private JPanel parent;
+	private ChessBoard parent;
 	/**
 	 * this boolean means that this tile is an avaliable tile for the next move.
 	 */
-	private boolean selected;
+	private boolean avaliable, selected;
 
-	protected Tile(JPanel parent, Point tileCoordinate, String position,
+	protected Tile(ChessBoard parent, Point tileCoordinate, String position,
 			int color) {
 		this.tileCoordinate = tileCoordinate;
 		this.myPosition = position;
 		this.myColor = color;
-		selected = false;
+		avaliable = false;
 		parent.addMouseListener(this);
 		this.parent = parent;
 	}
 
-	protected void setPiece(Piece piece) {
+	public void setPiece(Piece piece) {
 		this.myPiece = piece;
 	}
 
@@ -51,7 +51,7 @@ public class Tile implements MouseListener {
 		return myPiece;
 	}
 
-	protected String getPostion() {
+	public String getPostion() {
 		return myPosition;
 	}
 
@@ -59,26 +59,34 @@ public class Tile implements MouseListener {
 		return tileCoordinate;
 	}
 
+	public void setAvaliability(boolean flag) {
+		avaliable = flag;
+		selected = flag;
+	}
+
 	protected void draw(Graphics g) {
-		if (myColor == 1)
+		if (myColor == 1) {
 			g.setColor(UIManager
 					.getColor("OptionPane.warningDialog.titlePane.shadow"));
-		else
+		} else {
 			g.setColor(UIManager
 					.getColor("OptionPane.warningDialog.titlePane.foreground"));
+		}
 
 		g.fillRect(tileCoordinate.x, tileCoordinate.y, TILEWIDTH, TILEWIDTH);
-		
+
 		g.setColor(Color.black);
-		g.setFont(new Font("DejaVu Sans Condensed", Font.BOLD | Font.ITALIC, 10));
+		g.setFont(
+				new Font("DejaVu Sans Condensed", Font.BOLD | Font.ITALIC, 10));
 		g.drawString(myPosition, tileCoordinate.x + TILEWIDTH - 15,
 				tileCoordinate.y + TILEWIDTH - 5);
-		if (selected && !hasPiece()) {
+		if (avaliable) {
 			g.setColor(Color.green);
 
-			g.fillOval(tileCoordinate.x + TILEWIDTH / 4,
-					tileCoordinate.y + TILEWIDTH / 4, TILEWIDTH / 4,
+			g.fillOval(tileCoordinate.x ,
+					tileCoordinate.y , TILEWIDTH / 4,
 					TILEWIDTH / 4);
+			avaliable = false;
 		}
 		if (hasPiece()) {
 			myPiece.draw(g);
@@ -89,13 +97,6 @@ public class Tile implements MouseListener {
 	public void mouseClicked(java.awt.event.MouseEvent e) {
 		// TODO Auto-generated method stub
 
-		Rectangle rec = new Rectangle(tileCoordinate.x, tileCoordinate.y,
-				TILEWIDTH, TILEWIDTH);
-		if (rec.contains(e.getPoint())) {
-			selected = true;
-			System.out.println(myPosition);
-			parent.repaint();
-		}
 	}
 
 	@Override
@@ -108,6 +109,16 @@ public class Tile implements MouseListener {
 	public void mouseReleased(java.awt.event.MouseEvent e) {
 		// TODO Auto-generated method stub
 
+		Rectangle rec = new Rectangle(tileCoordinate.x, tileCoordinate.y,
+				TILEWIDTH, TILEWIDTH);
+		if (rec.contains(e.getPoint()) && hasPiece()) {
+			System.out.println(myPiece.getAvailablePositions() + "  "
+					+ myPiece.getClass().getName());
+			parent.markAvaliableTiles(myPiece, myPiece.getAvailablePositions());
+		} else if (rec.contains(e.getPoint()) && !hasPiece() && selected) {
+			selected = false;
+			parent.moveSelectedPiece(myPosition);
+		}
 	}
 
 	@Override
