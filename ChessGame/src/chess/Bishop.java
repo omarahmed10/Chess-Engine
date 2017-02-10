@@ -1,11 +1,15 @@
 package chess;
 
+import java.awt.Image;
 import java.awt.Point;
 
 public class Bishop extends Piece {
 
-	public Bishop(Point initialPosition, int armyType, Object[][] board) {
-		super(initialPosition, armyType, board);
+
+	public Bishop(Point initialPosition, int armyType, Object[][] board,
+			Image pieceImage) {
+		super(initialPosition, armyType, board, pieceImage);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override

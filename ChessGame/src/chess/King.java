@@ -1,11 +1,14 @@
 package chess;
 
+import java.awt.Image;
 import java.awt.Point;
 
 public class King extends Piece {
 
-	public King(Point initialPosition, int armyType, Object[][] board) {
-		super(initialPosition, armyType, board);
+
+	public King(Point initialPosition, int armyType, Object[][] board,
+			Image pieceImage) {
+		super(initialPosition, armyType, board, pieceImage);
 	}
 
 	@Override

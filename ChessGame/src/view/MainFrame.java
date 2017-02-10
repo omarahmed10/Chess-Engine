@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
+
 public class MainFrame extends JFrame {
 
 	/**
@@ -24,12 +25,14 @@ public class MainFrame extends JFrame {
 	private void initialize() throws InterruptedException {
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setSize(screenSize.width*3/4, screenSize.height*3/4);
+		setSize(500, screenSize.height*3/4);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Intro intro = new Intro(this);
-		intro.setSize(getWidth(), getHeight());
-		add(intro);
+//		Intro intro = new Intro(this);
+//		intro.setSize(getWidth(), getHeight());
+//		add(intro);
+		ChessBoard b = new ChessBoard();
+		add(b);
 	}
 
 	public static void main(String[] args) {
