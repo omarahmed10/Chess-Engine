@@ -1,11 +1,11 @@
 package gui;
 
-import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
+import chessBoard.Tile;
 
 public class MainFrame extends JFrame {
 
@@ -23,15 +23,15 @@ public class MainFrame extends JFrame {
 	}
 
 	private void initialize() throws InterruptedException {
-
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setSize(500, screenSize.height*3/4);
+		setBounds(200, 100, 500, 100 + 8 * Tile.TILEWIDTH);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		Intro intro = new Intro(this);
-//		intro.setSize(getWidth(), getHeight());
-//		add(intro);
-		ChessBoard b = new ChessBoard();
+		// Intro intro = new Intro(this);
+		// intro.setSize(getWidth(), getHeight());
+		// add(intro);
+		setLayout(null);
+		JPanel b = new Board();
+		b.setSize(getWidth(), getHeight());
 		add(b);
 	}
 

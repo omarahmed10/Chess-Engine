@@ -1,7 +1,6 @@
 package pieces;
 
 import java.awt.Image;
-import java.awt.Point;
 import java.util.Map;
 
 import chessBoard.Tile;

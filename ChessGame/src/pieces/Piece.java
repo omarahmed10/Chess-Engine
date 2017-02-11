@@ -9,7 +9,6 @@ import java.util.Map;
 
 import chessBoard.Tile;
 
-
 public abstract class Piece {
 
 	public final static int WHITE_ARMY = -1;
@@ -19,7 +18,10 @@ public abstract class Piece {
 	protected final static int HAS_ALLY = 5;
 	protected final static String BOARD_LOW_LIMIT = "A1";
 	protected final static String BOARD_HIGH_LIMIT = "H8";
-
+	public final static int pieceWidht = Tile.TILEWIDTH - 25;
+	public final static int pieceHieght = Tile.TILEWIDTH - 15;
+	public final static int MOVED = 0;
+	public final static int ATTACK = 1;
 	protected int armyType;
 	protected String currentPosition;
 	protected List<String> availablePositions;
@@ -44,7 +46,8 @@ public abstract class Piece {
 		// setAvailablePositions(chessBoard);
 	}
 
-	public boolean move(String toPosition, List<Piece> graveyard) {
+	public int move(String toPosition, List<Piece> graveyard) {
+		int ans = -1;
 		if (!isDead()) {
 
 			if (availablePositions.contains(toPosition)) {
@@ -54,17 +57,20 @@ public abstract class Piece {
 				if (getSquareStatus(toPosition) == HAS_ENEMY) {
 					chessBoard.get(toPosition).getPiece()
 							.sendToGraveyard(graveyard);
+					ans = ATTACK;
+				} else {
+					ans = MOVED;
 				}
 				chessBoard.get(currentPosition).setPiece(null);
 				currentPosition = toPosition;
-				setAvailablePositions();
+				// setAvaliablePositions must be called for all pieces.
+				// setAvailablePositions();
 				// move is completed
-				return true;
 			}
 
 		}
 		// move isn't completed
-		return false;
+		return ans;
 	}
 
 	public abstract void setAvailablePositions();
@@ -78,13 +84,13 @@ public abstract class Piece {
 	}
 
 	public void sendToGraveyard(List<Piece> graveyard) {
-		currentPosition = null;
-		availablePositions = null;
+		this.currentPosition = null;
+		this.availablePositions = null;
 		graveyard.add(this);
 	}
 
 	public boolean isDead() {
-		return currentPosition == null && availablePositions == null;
+		return this.currentPosition == null && this.availablePositions == null;
 	}
 
 	public boolean isThreatened(List<Point> attackerAvailablePositions) {
@@ -131,10 +137,24 @@ public abstract class Piece {
 		return toPosition;
 	}
 
+	private Point graveCoordinate;
+
+	public void addGraveCoordinate(Point x) {
+		graveCoordinate = x;
+		System.out.println(x);
+	}
+
 	public void draw(Graphics g) {
-		Point position = chessBoard.get(currentPosition).getCoordinate();
-		g.drawImage(myImage, position.x + 10, position.y + 5,
-				Tile.TILEWIDTH - 25, Tile.TILEWIDTH - 15, null);
+		if (!isDead()) {
+			Point position = chessBoard.get(currentPosition).getCoordinate();
+			g.drawImage(myImage, position.x + 10, position.y + 5,
+					pieceWidht, pieceHieght, null);
+		} else {
+			System.out.println(graveCoordinate.x + " " + graveCoordinate.y + " "
+					+ pieceWidht + " " + pieceHieght);
+			g.drawImage(myImage, graveCoordinate.x, graveCoordinate.y,
+					pieceWidht, pieceHieght, null);
+		}
 	}
 
 }

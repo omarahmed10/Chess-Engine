@@ -8,7 +8,6 @@ import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import javax.swing.UIManager;
 
-import gui.ChessBoard;
 import pieces.Piece;
 
 /**
@@ -25,6 +24,7 @@ public class Tile implements MouseListener {
 	private final String myPosition;
 	private final int myColor;
 	private ChessBoard parent;
+	private final Rectangle bound;
 	/**
 	 * this boolean means that this tile is an avaliable tile for the next move.
 	 */
@@ -38,6 +38,8 @@ public class Tile implements MouseListener {
 		avaliable = false;
 		parent.addMouseListener(this);
 		this.parent = parent;
+		bound = new Rectangle(tileCoordinate.x, tileCoordinate.y, TILEWIDTH,
+				TILEWIDTH);
 	}
 
 	public void setPiece(Piece piece) {
@@ -84,13 +86,32 @@ public class Tile implements MouseListener {
 		if (avaliable) {
 			g.setColor(Color.green);
 
-			g.fillOval(tileCoordinate.x ,
-					tileCoordinate.y , TILEWIDTH / 4,
+			g.fillOval(tileCoordinate.x, tileCoordinate.y, TILEWIDTH / 4,
 					TILEWIDTH / 4);
 			avaliable = false;
 		}
 		if (hasPiece()) {
 			myPiece.draw(g);
+		}
+	}
+
+	@Override
+	public void mouseReleased(java.awt.event.MouseEvent e) {
+		// TODO Auto-generated method stub
+		if (bound.contains(e.getPoint())) {
+			if (hasPiece()) {
+				if (parent.markAvaliableTiles(myPiece,
+						myPiece.getAvailablePositions())) {
+					System.out.println(myPiece.getAvailablePositions() + "  "
+							+ myPiece.getClass().getName());
+				} else {
+					// attack this is an enemy.
+					parent.moveSelectedPiece(myPosition);
+				}
+			} else if (!hasPiece() && selected) {
+				selected = false;
+				parent.moveSelectedPiece(myPosition);
+			}
 		}
 	}
 
@@ -104,22 +125,6 @@ public class Tile implements MouseListener {
 	public void mousePressed(java.awt.event.MouseEvent e) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public void mouseReleased(java.awt.event.MouseEvent e) {
-		// TODO Auto-generated method stub
-
-		Rectangle rec = new Rectangle(tileCoordinate.x, tileCoordinate.y,
-				TILEWIDTH, TILEWIDTH);
-		if (rec.contains(e.getPoint()) && hasPiece()) {
-			System.out.println(myPiece.getAvailablePositions() + "  "
-					+ myPiece.getClass().getName());
-			parent.markAvaliableTiles(myPiece, myPiece.getAvailablePositions());
-		} else if (rec.contains(e.getPoint()) && !hasPiece() && selected) {
-			selected = false;
-			parent.moveSelectedPiece(myPosition);
-		}
 	}
 
 	@Override
