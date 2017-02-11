@@ -1,6 +1,8 @@
-package chess;
+package chessBoard;
 
 import java.util.ArrayList;
+
+import pieces.Piece;
 
 public class Try {
 	ArrayList<Integer> arrLst = new ArrayList<Integer>();

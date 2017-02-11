@@ -1,4 +1,4 @@
-package chess;
+package chessBoard;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -8,7 +8,8 @@ import java.awt.Rectangle;
 import java.awt.event.MouseListener;
 import javax.swing.UIManager;
 
-import view.ChessBoard;
+import gui.ChessBoard;
+import pieces.Piece;
 
 /**
  * this is the class of single chess tile. the tile is empty on creation until a
@@ -18,7 +19,7 @@ import view.ChessBoard;
  *
  */
 public class Tile implements MouseListener {
-	protected final static int TILEWIDTH = 50;
+	public final static int TILEWIDTH = 50;
 	private final Point tileCoordinate;
 	private Piece myPiece;
 	private final String myPosition;
@@ -43,11 +44,11 @@ public class Tile implements MouseListener {
 		this.myPiece = piece;
 	}
 
-	protected boolean hasPiece() {
+	public boolean hasPiece() {
 		return myPiece != null;
 	}
 
-	protected Piece getPiece() {
+	public Piece getPiece() {
 		return myPiece;
 	}
 
@@ -55,7 +56,7 @@ public class Tile implements MouseListener {
 		return myPosition;
 	}
 
-	protected Point getCoordinate() {
+	public Point getCoordinate() {
 		return tileCoordinate;
 	}
 
@@ -64,7 +65,7 @@ public class Tile implements MouseListener {
 		selected = flag;
 	}
 
-	protected void draw(Graphics g) {
+	public void draw(Graphics g) {
 		if (myColor == 1) {
 			g.setColor(UIManager
 					.getColor("OptionPane.warningDialog.titlePane.shadow"));

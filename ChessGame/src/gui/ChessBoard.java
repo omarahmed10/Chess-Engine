@@ -1,4 +1,4 @@
-package view;
+package gui;
 
 import java.awt.Graphics;
 import java.util.LinkedList;
@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
-import chess.ChessTile;
-import chess.Piece;
-import chess.Tile;
+
+import chessBoard.ChessTile;
+import chessBoard.Tile;
+import pieces.Piece;
 
 public class ChessBoard extends JPanel {
 	/**
@@ -42,6 +43,7 @@ public class ChessBoard extends JPanel {
 	public void moveSelectedPiece(String toPosition) {
 		if (currentPiece.move(toPosition, graveyard)) {
 			tilesMap.get(toPosition).setPiece(currentPiece);
+			ChessTile.setAvailablePositions();
 			repaint();
 		}
 	}

@@ -1,7 +1,9 @@
-package chess;
+package pieces;
 
 import java.awt.Image;
 import java.util.Map;
+
+import chessBoard.Tile;
 
 public class Queen extends Piece {
 
@@ -12,7 +14,7 @@ public class Queen extends Piece {
 	}
 
 	@Override
-	protected void setAvailablePositions() {
+	public void setAvailablePositions() {
 		availablePositions.clear();
 
 		// What ROOK does

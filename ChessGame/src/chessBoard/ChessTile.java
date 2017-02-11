@@ -1,4 +1,4 @@
-package chess;
+package chessBoard;
 
 import java.awt.Graphics;
 import java.awt.Point;
@@ -7,8 +7,15 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
-import view.ChessBoard;
-import view.ImageLoader;
+import gui.ChessBoard;
+import gui.ImageLoader;
+import pieces.Bishop;
+import pieces.King;
+import pieces.Knight;
+import pieces.Pawn;
+import pieces.Piece;
+import pieces.Queen;
+import pieces.Rook;
 
 public class ChessTile {
 
@@ -107,7 +114,7 @@ public class ChessTile {
 
 	}
 
-	private static void setAvailablePositions() {
+	public static void setAvailablePositions() {
 		for (int i = 65; i <= 72; i++) {
 			for (int j : arr) {
 				String s = (char) i + "" + j;

@@ -1,4 +1,4 @@
-package chess;
+package pieces;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import chessBoard.Tile;
+
 
 public abstract class Piece {
 
-	protected final static int WHITE_ARMY = -1;
-	protected final static int BLACK_ARMY = 1;
+	public final static int WHITE_ARMY = -1;
+	public final static int BLACK_ARMY = 1;
 	protected final static int HAS_NO_PIECE = 3;
 	protected final static int HAS_ENEMY = 4;
 	protected final static int HAS_ALLY = 5;
@@ -65,7 +67,7 @@ public abstract class Piece {
 		return false;
 	}
 
-	protected abstract void setAvailablePositions();
+	public abstract void setAvailablePositions();
 
 	public List<String> getAvailablePositions() {
 		return availablePositions;

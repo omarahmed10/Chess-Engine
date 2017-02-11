@@ -1,8 +1,10 @@
-package chess;
+package pieces;
 
 import java.awt.Image;
 import java.awt.Point;
 import java.util.Map;
+
+import chessBoard.Tile;
 
 public class Rook extends Piece {
 
@@ -12,7 +14,7 @@ public class Rook extends Piece {
 	}
 
 	@Override
-	protected void setAvailablePositions() {
+	public void setAvailablePositions() {
 		availablePositions.clear();
 		
 		int d = (int) currentPosition.charAt(0);
@@ -58,8 +60,8 @@ public class Rook extends Piece {
 			if (getSquareStatus(position) == HAS_ENEMY) {
 				availablePositions.add(position);
 			}
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 }

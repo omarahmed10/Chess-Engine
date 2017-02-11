@@ -1,7 +1,9 @@
-package chess;
+package pieces;
 
 import java.awt.Image;
 import java.util.Map;
+
+import chessBoard.Tile;
 
 public class Pawn extends Piece {
 
@@ -14,7 +16,7 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	protected void setAvailablePositions() {
+	public void setAvailablePositions() {
 		availablePositions.clear();
 
 		final int minStep = 1;
@@ -30,6 +32,8 @@ public class Pawn extends Piece {
 			if (!isOutOfBounds(position)
 					&& getSquareStatus(position) == HAS_NO_PIECE) {
 				availablePositions.add(position);
+			} else {
+				break;
 			}
 		}
 
@@ -42,7 +46,8 @@ public class Pawn extends Piece {
 		}
 
 		// if has enemy on the right , the it's available position
-		position = translate(currentPosition, minStep* -armyType, (minStep * armyType));
+		position = translate(currentPosition, minStep * -armyType,
+				(minStep * armyType));
 		if (!isOutOfBounds(position)
 				&& getSquareStatus(position) == HAS_ENEMY) {
 			availablePositions.add(position);
