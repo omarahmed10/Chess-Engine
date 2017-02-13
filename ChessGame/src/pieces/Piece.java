@@ -3,9 +3,12 @@ package pieces;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.font.ImageGraphicAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.ImageIcon;
 
 import chessBoard.Tile;
 
@@ -137,23 +140,26 @@ public abstract class Piece {
 		return toPosition;
 	}
 
-	private Point graveCoordinate;
+//	private Point graveCoordinate;
 
-	public void addGraveCoordinate(Point x) {
-		graveCoordinate = x;
-		System.out.println(x);
+	public Image getImage() {
+		return myImage;
 	}
+
+//	public void addGraveCoordinate(Point x) {
+//		graveCoordinate = x;
+//		System.out.println(x);
+//	}
 
 	public void draw(Graphics g) {
 		if (!isDead()) {
 			Point position = chessBoard.get(currentPosition).getCoordinate();
-			g.drawImage(myImage, position.x + 10, position.y + 5,
-					pieceWidht, pieceHieght, null);
+			g.drawImage(myImage, position.x + 10, position.y + 5, pieceWidht,
+					pieceHieght, null);
 		} else {
-			System.out.println(graveCoordinate.x + " " + graveCoordinate.y + " "
-					+ pieceWidht + " " + pieceHieght);
-			g.drawImage(myImage, graveCoordinate.x, graveCoordinate.y,
-					pieceWidht, pieceHieght, null);
+			System.out.println("Draw in grave: ");
+//			g.drawImage(myImage, graveCoordinate.x, graveCoordinate.y,
+//					pieceWidht, pieceHieght, null);
 		}
 	}
 

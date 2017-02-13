@@ -1,7 +1,9 @@
 package gui;
 
 import java.awt.Graphics;
+
 import javax.swing.JPanel;
+
 import chessBoard.ChessBoard;
 import chessBoard.ChessTiles;
 
@@ -21,6 +23,6 @@ public class Board extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		ChessTiles.drawTiles(g);
-		chessBoard.drawGraves(g);
 	}
+
 }
