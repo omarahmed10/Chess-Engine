@@ -95,7 +95,7 @@ public class ChessBoard {
 		}
 		deadPiece.addGraveCoordinate(new Point(
 				graveYard.getX() + graveYard.graveWidth, graveYard.getY()));
-		graveYard.graveWidth += Piece.pieceWidht;
+		graveYard.graveWidth += Piece.pieceWidth;
 	}
 
 	public void drawGraves(Graphics g) {
