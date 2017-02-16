@@ -3,6 +3,7 @@ package pieces;
 import java.awt.Image;
 import java.util.Map;
 
+import chessBoard.Move;
 import chessBoard.Tile;
 
 public class Rook extends Piece {
@@ -10,11 +11,12 @@ public class Rook extends Piece {
 	public Rook(String initialPosition, int armyType,
 			Map<String, Tile> chesschessBoard, Image pieceImage) {
 		super(initialPosition, armyType, chesschessBoard, pieceImage);
+		pieceValue = 500;
 	}
 
 	@Override
-	public void setAvailablePositions() {
-		availablePositions.clear();
+	public void setLegalMoves() {
+		availableMoves.clear();
 		
 		int d = (int) currentPosition.charAt(0);
 		int d2 = Integer.parseInt(currentPosition.charAt(1) + "");
@@ -49,15 +51,15 @@ public class Rook extends Piece {
 
 	private boolean freeSquare(String position) {
 		// if the square is free , then add it
-		if (getSquareStatus(position) == HAS_NO_PIECE) {
-			availablePositions.add(position);
+		if (getSquareStatus(position) == Tile.HAS_NO_PIECE) {
+			availableMoves.add(new Move(chessBoard, this, position));
 		}
 
 		else {
 			// if the square has an enemy piece , we add the point and stop
 			// and if it's an ally , then stop
-			if (getSquareStatus(position) == HAS_ENEMY) {
-				availablePositions.add(position);
+			if (getSquareStatus(position) == Tile.HAS_ENEMY) {
+				availableMoves.add(new Move(chessBoard, this, position));
 			}
 			return false;
 		}

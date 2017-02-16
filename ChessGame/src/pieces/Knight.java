@@ -3,6 +3,7 @@ package pieces;
 import java.awt.Image;
 import java.util.Map;
 
+import chessBoard.Move;
 import chessBoard.Tile;
 
 public class Knight extends Piece {
@@ -10,12 +11,12 @@ public class Knight extends Piece {
 	public Knight(String initialPosition, int armyType,
 			Map<String, Tile> chesschessBoard, Image pieceImage) {
 		super(initialPosition, armyType, chesschessBoard, pieceImage);
-		// TODO Auto-generated constructor stub
+		pieceValue = 320;
 	}
 
 	@Override
-	public void setAvailablePositions() {
-		availablePositions.clear();
+	public void setLegalMoves() {
+		availableMoves.clear();
 
 		final int movementFactor1 = 1;
 		final int movementFactor2 = 2;
@@ -35,15 +36,15 @@ public class Knight extends Piece {
 				// if the square is free or has an enemy (hasn't an ally
 				// piece) , then we can add this position
 				if (!isOutOfBounds(position)
-						&& getSquareStatus(position) != HAS_ALLY) {
-					availablePositions.add(position);
+						&& getSquareStatus(position) != Tile.HAS_ALLY) {
+					availableMoves.add(new Move(chessBoard, this, position));
 				}
 
 				position = translate(currentPosition, y, x);
 
 				if (!isOutOfBounds(position)
-						&& getSquareStatus(position) != HAS_ALLY) {
-					availablePositions.add(position);
+						&& getSquareStatus(position) != Tile.HAS_ALLY) {
+					availableMoves.add(new Move(chessBoard, this, position));
 				}
 
 			}

@@ -42,20 +42,20 @@ public class ChessBoard {
 		guiBoard.add(blackGraveYard);
 	}
 
-	public boolean markAvaliableTiles(Piece selectedPiece, List<String> list) {
+	public boolean markAvaliableTiles(Piece selectedPiece, List<Move> list) {
 		if (playerTurn == 1
-				&& whitePlayer.getArmy().containsValue(selectedPiece)) {
+				&& whitePlayer.getArmy().contains(selectedPiece)) {
 			currentPiece = selectedPiece;
-			for (String s : list) {
-				tilesMap.get(s).setAvaliability(true);
+			for (Move m : list) {
+				tilesMap.get(m.getToPosition()).setAvaliability(true);
 			}
 			guiBoard.repaint();
 			return true;
 		} else if (playerTurn == -1
-				&& blackPlayer.getArmy().containsValue(selectedPiece)) {
+				&& blackPlayer.getArmy().contains(selectedPiece)) {
 			currentPiece = selectedPiece;
-			for (String s : list) {
-				tilesMap.get(s).setAvaliability(true);
+			for (Move m : list) {
+				tilesMap.get(m.getToPosition()).setAvaliability(true);
 			}
 			guiBoard.repaint();
 			return true;

@@ -1,0 +1,9 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar for Hello World example
+ */
+
+grammar hello;
+
+public <greet> = (ae | a | be | bee | see | cee | sea | dee | de | eh | ee | ef | F | gee | ge | etch | edge | hedge | hatch | itch) (one | two | three | four | five | six | seven | eight);

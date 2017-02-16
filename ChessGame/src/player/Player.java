@@ -1,27 +1,33 @@
 package player;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
+import chessBoard.Move;
 import pieces.Piece;
 
 public class Player {
-	private Map<String, Piece> myArmy;
+	private List<Piece> myArmy;
 	private LinkedList<Piece> myGraveYard;
 	private final int armyType;
+	private List<List<Move>> legalMoves;
+	private Piece myKing;
 
 	public Player(int armyType) {
 		this.armyType = armyType;
-		myArmy = new HashMap<String, Piece>();
+		myArmy = new LinkedList<Piece>();
 		myGraveYard = new LinkedList<Piece>();
 	}
 
-	public void addPiece(String pieceName, Piece piece) {
-		myArmy.put(pieceName, piece);
+	public void addPiece(Piece piece) {
+		myArmy.add(piece);
 	}
 
-	public Map<String, Piece> getArmy() {
+	public void setKing(Piece king) {
+		this.myKing = king;
+	}
+
+	public List<Piece> getArmy() {
 		return myArmy;
 	}
 
@@ -32,4 +38,13 @@ public class Player {
 	public int getArmyType() {
 		return armyType;
 	}
+
+	public List<List<Move>> getLegalMoves() {
+		legalMoves = new LinkedList<List<Move>>();
+		for(Piece piece : myArmy){
+			legalMoves.add(piece.getLegalMoves());
+		}
+		return legalMoves;
+	}
+
 }

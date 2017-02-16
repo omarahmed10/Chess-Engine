@@ -62,7 +62,7 @@ public class ChessTiles {
 			Piece p = new Pawn(parent.getPostion(), Piece.WHITE_ARMY, allTiles,
 					ImageLoader.loadImage(whitePiece + "Pawn.png").getImage());
 			parent.setPiece(p);
-			whitePlayer.addPiece("pawn" + (i + 1), p);
+			whitePlayer.addPiece(p);
 		}
 		createPiece("A1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
 		createPiece("H1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
@@ -85,7 +85,7 @@ public class ChessTiles {
 			Piece p = new Pawn(parent.getPostion(), Piece.BLACK_ARMY, allTiles,
 					ImageLoader.loadImage(blackPiece + "Pawn.png").getImage());
 			parent.setPiece(p);
-			blackPlayer.addPiece("pawn" + (i + 1), p);
+			blackPlayer.addPiece(p);
 		}
 		createPiece("A8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
 		createPiece("H8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
@@ -106,29 +106,30 @@ public class ChessTiles {
 			p = new Rook(parent.getPostion(), army, allTiles, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
-			player.addPiece(pieceName + ++pieceNo, p);
+			player.addPiece(p);
 		} else if (position == "B8" || position == "B1" || position == "G8"
 				|| position == "G1") {
 			p = new Knight(parent.getPostion(), army, allTiles, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
-			player.addPiece(pieceName + ++pieceNo, p);
+			player.addPiece(p);
 		} else if (position == "F8" || position == "F1" || position == "C8"
 				|| position == "C1") {
 			p = new Bishop(parent.getPostion(), army, allTiles, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
-			player.addPiece(pieceName + ++pieceNo, p);
+			player.addPiece(p);
 		} else if (position == "D8" || position == "D1") {
 			p = new King(parent.getPostion(), army, allTiles, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
-			player.addPiece(pieceName, p);
+			player.addPiece(p);
+			player.setKing(p);
 		} else if (position == "E8" || position == "E1") {
 			p = new Queen(parent.getPostion(), army, allTiles, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
-			player.addPiece(pieceName, p);
+			player.addPiece(p);
 		}
 
 	}
@@ -139,7 +140,7 @@ public class ChessTiles {
 				String s = (char) i + "" + j;
 				Piece p = allTiles.get(s).getPiece();
 				if (p != null)
-					p.setAvailablePositions();
+					p.setLegalMoves();
 			}
 		}
 	}

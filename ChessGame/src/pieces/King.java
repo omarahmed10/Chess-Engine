@@ -3,6 +3,7 @@ package pieces;
 import java.awt.Image;
 import java.util.Map;
 
+import chessBoard.Move;
 import chessBoard.Tile;
 
 public class King extends Piece {
@@ -10,12 +11,12 @@ public class King extends Piece {
 	public King(String initialPosition, int armyType,
 			Map<String, Tile> chesschessBoard, Image pieceImage) {
 		super(initialPosition, armyType, chesschessBoard, pieceImage);
-		// TODO Auto-generated constructor stub
+		pieceValue = 10000;
 	}
 
 	@Override
-	public void setAvailablePositions() {
-		availablePositions.clear();
+	public void setLegalMoves() {
+		availableMoves.clear();
 
 		final int movementFactor = 1;
 
@@ -27,8 +28,8 @@ public class King extends Piece {
 				// if the square is free or has an enemy (hasn't an ally
 				// piece) , then we can add this position
 				if (!isOutOfBounds(position)
-						&& getSquareStatus(position) != HAS_ALLY) {
-					availablePositions.add(position);
+						&& getSquareStatus(position) != Tile.HAS_ALLY) {
+					availableMoves.add(new Move(chessBoard, this, position));
 				}
 			}
 		}
@@ -42,7 +43,7 @@ public class King extends Piece {
 				Piece piece = chessBoard.get(tilePosition).getPiece();
 				
 				// if the piece is enemy and has the king's position in its available positions , then the king is checked
-				if (piece.getArmyType() != this.armyType && piece.getAvailablePositions().contains(this.currentPosition)) {
+				if (piece.getArmyType() != this.armyType && piece.hasMoveTo(currentPosition)) {
 					return true;
 				}
 			}
@@ -59,7 +60,7 @@ public class King extends Piece {
 				if (chessBoard.get(tilePosition).hasPiece()) {
 					Piece piece = chessBoard.get(tilePosition).getPiece();
 					// if there is at least one piece in this army has at least one legal move , then it is not a stalemate
-					if (piece.getArmyType() == this.armyType && piece.getAvailablePositions().size() != 0) {
+					if (piece.getArmyType() == this.armyType && piece.getLegalMoves().size() != 0) {
 						return false;
 					}
 				}
