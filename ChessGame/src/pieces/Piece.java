@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 
 import chessBoard.Tile;
 
-public abstract class Piece {
+public abstract class Piece implements Cloneable{
 
 	public final static int WHITE_ARMY = -1;
 	public final static int BLACK_ARMY = 1;
@@ -21,7 +21,7 @@ public abstract class Piece {
 	protected final static int HAS_ALLY = 5;
 	protected final static String BOARD_LOW_LIMIT = "A1";
 	protected final static String BOARD_HIGH_LIMIT = "H8";
-	public final static int pieceWidht = Tile.TILEWIDTH - 25;
+	public final static int pieceWidth = Tile.TILEWIDTH - 25;
 	public final static int pieceHieght = Tile.TILEWIDTH - 15;
 	public final static int MOVED = 0;
 	public final static int ATTACK = 1;
@@ -154,7 +154,7 @@ public abstract class Piece {
 	public void draw(Graphics g) {
 		if (!isDead()) {
 			Point position = chessBoard.get(currentPosition).getCoordinate();
-			g.drawImage(myImage, position.x + 10, position.y + 5, pieceWidht,
+			g.drawImage(myImage, position.x + 10, position.y + 5, pieceWidth,
 					pieceHieght, null);
 		} else {
 			System.out.println("Draw in grave: ");
@@ -162,5 +162,13 @@ public abstract class Piece {
 //					pieceWidht, pieceHieght, null);
 		}
 	}
-
+	
+	public void setAvailablePositions (List defenders) {
+	}
+	
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

@@ -33,11 +33,11 @@ public class Grave extends JPanel {
 
 	protected void addDeadPiece(Piece deadPiece) {
 		Image img = deadPiece.getImage();
-		Image newimg = img.getScaledInstance(Piece.pieceWidht,
+		Image newimg = img.getScaledInstance(Piece.pieceWidth,
 				Piece.pieceHieght, java.awt.Image.SCALE_SMOOTH);
 		JButton button = new JButton(new ImageIcon(newimg));
 		setButtonProp(button);
-		button.setBounds(getX() + graveWidth, 0, Piece.pieceWidht,
+		button.setBounds(getX() + graveWidth, 0, Piece.pieceWidth,
 				Piece.pieceHieght);
 		graveWidth += button.getWidth() + 10;
 		deadPieces.add(button);

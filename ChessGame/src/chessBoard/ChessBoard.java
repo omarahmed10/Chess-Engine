@@ -1,5 +1,6 @@
 package chessBoard;
 
+import java.awt.Graphics;
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +13,7 @@ import player.Player;
 
 public class ChessBoard {
 
-	public final static Point startPoint = new Point(0, Piece.pieceHieght);
+	public final static Point startPoint = new Point(0, 50);
 	private Map<String, Tile> tilesMap;
 	private Piece currentPiece;
 	private final Player whitePlayer;
@@ -31,15 +32,13 @@ public class ChessBoard {
 		// whitePlayer start the game.
 		playerTurn = 1;
 		this.guiBoard = guiBoard;
-		//////////////////////////////
 		ChessTiles.createSkeletonBoard(this, whitePlayer, blackPlayer);
 		tilesMap = ChessTiles.getBoardTiles();
-		//////////////////////////////
 		blackGraveYard = new Grave(guiBoard.getX(), guiBoard.getY());
 		whiteGraveYard = new Grave(guiBoard.getX(),
-				ChessBoard.startPoint.y + 8 * Tile.TILEWIDTH);
-		guiBoard.add(whiteGraveYard);
+				guiBoard.getY() + 9 * Tile.TILEWIDTH);
 		guiBoard.add(blackGraveYard);
+		guiBoard.add(whiteGraveYard);
 	}
 
 	public boolean markAvaliableTiles(Piece selectedPiece, List<String> list) {
@@ -65,14 +64,11 @@ public class ChessBoard {
 
 	public void moveSelectedPiece(String toPosition) {
 		LinkedList<Piece> graveyard;
-		Grave grave;
 		// if white player kill a piece then it will be add in black player
 		// grave yard and vice versa.
 		if (playerTurn == 1) {
-			grave = blackGraveYard;
 			graveyard = blackPlayer.getDeadArmy();
 		} else {
-			grave = whiteGraveYard;
 			graveyard = whitePlayer.getDeadArmy();
 		}
 		if (currentPiece != null) {
@@ -83,9 +79,34 @@ public class ChessBoard {
 				// switch turns.
 				playerTurn *= -1;
 				if (action == Piece.ATTACK) {
-					grave.addDeadPiece(graveyard.getLast());
+					addToGrave(graveyard.getLast());
 				}
 				guiBoard.repaint();
+			}
+		}
+	}
+
+	public void addToGrave(Piece deadPiece) {
+		Grave graveYard;
+		if (deadPiece.getArmyType() == Piece.BLACK_ARMY) {
+			graveYard = blackGraveYard;
+		} else {
+			graveYard = whiteGraveYard;
+		}
+		deadPiece.addGraveCoordinate(new Point(
+				graveYard.getX() + graveYard.graveWidth, graveYard.getY()));
+		graveYard.graveWidth += Piece.pieceWidth;
+	}
+
+	public void drawGraves(Graphics g) {
+		if (whitePlayer.getDeadArmy() != null) {
+			for (Piece p : whitePlayer.getDeadArmy()) {
+				p.draw(g);
+			}
+		}
+		if (blackPlayer.getDeadArmy() != null) {
+			for (Piece p : blackPlayer.getDeadArmy()) {
+				p.draw(g);
 			}
 		}
 	}
