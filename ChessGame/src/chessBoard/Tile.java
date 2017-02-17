@@ -19,6 +19,9 @@ import pieces.Piece;
  */
 public class Tile implements MouseListener {
 	public final static int TILEWIDTH = 50;
+	public final static int HAS_NO_PIECE = 3;
+	public final static int HAS_ENEMY = 4;
+	public final static int HAS_ALLY = 5;
 	private final Point tileCoordinate;
 	private Piece myPiece;
 	private final String myPosition;
@@ -101,8 +104,8 @@ public class Tile implements MouseListener {
 		if (bound.contains(e.getPoint())) {
 			if (hasPiece()) {
 				if (parent.markAvaliableTiles(myPiece,
-						myPiece.getAvailablePositions())) {
-					System.out.println(myPiece.getAvailablePositions() + "  "
+						myPiece.getLegalMoves())) {
+					System.out.println(myPiece.getLegalMoves() + "  "
 							+ myPiece.getClass().getName());
 				} else {
 					// attack this is an enemy.

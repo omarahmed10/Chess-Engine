@@ -3,6 +3,7 @@ package pieces;
 import java.awt.Image;
 import java.util.Map;
 
+import chessBoard.Move;
 import chessBoard.Tile;
 
 public class Pawn extends Piece {
@@ -13,11 +14,12 @@ public class Pawn extends Piece {
 			Map<String, Tile> chesschessBoard, Image pieceImage) {
 		super(initialPosition, armyType, chesschessBoard, pieceImage);
 		this.initialPosition = initialPosition;
+		pieceValue = 100;
 	}
 
 	@Override
-	public void setAvailablePositions() {
-		availablePositions.clear();
+	public void setLegalMoves() {
+		availableMoves.clear();
 
 		final int minStep = 1;
 		int maxStep = minStep;
@@ -30,8 +32,8 @@ public class Pawn extends Piece {
 			// if white then step is -ve & vice versa
 			String position = translate(currentPosition, 0, (i * armyType));
 			if (!isOutOfBounds(position)
-					&& getSquareStatus(position) == HAS_NO_PIECE) {
-				availablePositions.add(position);
+					&& getSquareStatus(position) == Tile.HAS_NO_PIECE) {
+				availableMoves.add(new Move(chessBoard, this, position));
 			} else {
 				break;
 			}
@@ -41,16 +43,16 @@ public class Pawn extends Piece {
 		String position = translate(currentPosition, (minStep * armyType),
 				-minStep * -armyType);
 		if (!isOutOfBounds(position)
-				&& getSquareStatus(position) == HAS_ENEMY) {
-			availablePositions.add(position);
+				&& getSquareStatus(position) == Tile.HAS_ENEMY) {
+			availableMoves.add(new Move(chessBoard, this, position));
 		}
 
 		// if has enemy on the right , the it's available position
 		position = translate(currentPosition, minStep * -armyType,
 				(minStep * armyType));
 		if (!isOutOfBounds(position)
-				&& getSquareStatus(position) == HAS_ENEMY) {
-			availablePositions.add(position);
+				&& getSquareStatus(position) == Tile.HAS_ENEMY) {
+			availableMoves.add(new Move(chessBoard, this, position));
 		}
 	}
 

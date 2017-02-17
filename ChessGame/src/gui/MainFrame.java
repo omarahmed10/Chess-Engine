@@ -5,7 +5,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import chessBoard.Grave;
 import chessBoard.Tile;
+import pieces.Piece;
 
 public class MainFrame extends JFrame {
 
@@ -23,7 +25,7 @@ public class MainFrame extends JFrame {
 	}
 
 	private void initialize() throws InterruptedException {
-		setBounds(200, 100, 500, 100 + 8 * Tile.TILEWIDTH);
+		setBounds(200, 100, 500, Piece.pieceHieght * 2 + 8 * Tile.TILEWIDTH);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// Intro intro = new Intro(this);

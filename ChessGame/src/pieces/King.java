@@ -6,18 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import chessBoard.Move;
 import chessBoard.Tile;
 
 public class King extends Piece {
 
-	public King(String initialPosition, int armyType, Map<String, Tile> chesschessBoard, Image pieceImage) {
+	public King(String initialPosition, int armyType,
+			Map<String, Tile> chesschessBoard, Image pieceImage) {
 		super(initialPosition, armyType, chesschessBoard, pieceImage);
-		// TODO Auto-generated constructor stub
+		pieceValue = 10000;
 	}
 
 	@Override
-	public void setAvailablePositions() {
-		availablePositions.clear();
+	public void setLegalMoves() {
+		availableMoves.clear();
 
 		final int movementFactor = 1;
 
@@ -28,8 +30,9 @@ public class King extends Piece {
 				// The square available must not be out of bounds
 				// if the square is free or has an enemy (hasn't an ally
 				// piece) , then we can add this position
-				if (!isOutOfBounds(position) && getSquareStatus(position) != HAS_ALLY) {
-					availablePositions.add(position);
+				if (!isOutOfBounds(position)
+						&& getSquareStatus(position) != Tile.HAS_ALLY) {
+					availableMoves.add(new Move(chessBoard, this, position));
 				}
 			}
 		}
@@ -41,11 +44,10 @@ public class King extends Piece {
 		for (String tilePosition : chessBoard.keySet()) {
 			if (chessBoard.get(tilePosition).hasPiece()) {
 				Piece piece = chessBoard.get(tilePosition).getPiece();
-
 				// if the piece is enemy and has the king's position in its
 				// available positions , then the king is checked
 				if (piece.getArmyType() != this.armyType
-						&& piece.getAvailablePositions().contains(this.currentPosition)) {
+						&& piece.hasMoveTo(currentPosition)) {
 					return true;
 				}
 			}
@@ -64,7 +66,8 @@ public class King extends Piece {
 					Piece piece = chessBoard.get(tilePosition).getPiece();
 					// if there is at least one piece in this army has at least
 					// one legal move , then it is not a stalemate
-					if (piece.getArmyType() == this.armyType && piece.getAvailablePositions().size() != 0) {
+					if (piece.getArmyType() == this.armyType
+							&& piece.getLegalMoves().size() != 0) {
 						return false;
 					}
 				}
@@ -77,12 +80,12 @@ public class King extends Piece {
 	}
 
 	public boolean isCheckmate(List<Piece> checkers) {
-		
-		// In this copy , the contents of the original board are the same of the copy
+
+		// In this copy , the contents of the original board are the same of the
+		// copy
 		// I want to make method to iterate and make copy of each value
 		Map<String, Tile> boardCopy = new HashMap<>(chessBoard);
-		
-		
+
 		List<Piece> graveyardCopy = new ArrayList<Piece>();
 		Piece checkerCopy;
 
@@ -94,16 +97,17 @@ public class King extends Piece {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				for (String tilePosition : chessBoard.keySet()) {
 					if (chessBoard.get(tilePosition).hasPiece()
-							&& chessBoard.get(tilePosition).getPiece().getArmyType() == this.getArmyType()) {
+							&& chessBoard.get(tilePosition).getPiece()
+									.getArmyType() == this.getArmyType()) {
 
-						Piece defender = chessBoard.get(tilePosition).getPiece();
-
-						if (defender.getAvailablePositions().contains(checker.getPosition())) {
+						Piece defender = chessBoard.get(tilePosition)
+								.getPiece();
+						if (defender.hasMoveTo(checker.getPosition())) {
 							defender.move(checker.getPosition(), graveyardCopy);
-							//if ()
+							// if ()
 						}
 
 					}

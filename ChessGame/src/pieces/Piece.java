@@ -3,22 +3,17 @@ package pieces;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.font.ImageGraphicAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
-
+import chessBoard.Move;
 import chessBoard.Tile;
 
-public abstract class Piece implements Cloneable{
+public abstract class Piece implements Cloneable {
 
 	public final static int WHITE_ARMY = -1;
 	public final static int BLACK_ARMY = 1;
-	protected final static int HAS_NO_PIECE = 3;
-	protected final static int HAS_ENEMY = 4;
-	protected final static int HAS_ALLY = 5;
 	protected final static String BOARD_LOW_LIMIT = "A1";
 	protected final static String BOARD_HIGH_LIMIT = "H8";
 	public final static int pieceWidth = Tile.TILEWIDTH - 25;
@@ -27,21 +22,22 @@ public abstract class Piece implements Cloneable{
 	public final static int ATTACK = 1;
 	protected int armyType;
 	protected String currentPosition;
-	protected List<String> availablePositions;
+	protected List<Move> availableMoves;
 	protected Image myImage;
 	protected Map<String, Tile> chessBoard;
+	protected int pieceValue;
 
 	public Piece(String initialPosition, int armyType,
-			Map<String, Tile> chesschessBoard, Image pieceImage) {
+			Map<String, Tile> chessBoard, Image pieceImage) {
 		if (armyType != WHITE_ARMY && armyType != BLACK_ARMY) {
 			throw new RuntimeException("Error , -1 for white & 1 for black");
 		}
 		//
 		currentPosition = initialPosition;
 		this.armyType = armyType;
-		availablePositions = new ArrayList<String>();
+		availableMoves = new ArrayList<Move>();
 		this.myImage = pieceImage;
-		this.chessBoard = chesschessBoard;
+		this.chessBoard = chessBoard;
 		if (isOutOfBounds(initialPosition)) {
 			throw new RuntimeException(
 					"The point is out of the chessBoard's bounds");
@@ -53,11 +49,11 @@ public abstract class Piece implements Cloneable{
 		int ans = -1;
 		if (!isDead()) {
 
-			if (availablePositions.contains(toPosition)) {
+			if (hasMoveTo(toPosition)) {
 
 				// if this position has an enemy , then we send it to the grave
 				// yard
-				if (getSquareStatus(toPosition) == HAS_ENEMY) {
+				if (getSquareStatus(toPosition) == Tile.HAS_ENEMY) {
 					chessBoard.get(toPosition).getPiece()
 							.sendToGraveyard(graveyard);
 					ans = ATTACK;
@@ -76,29 +72,37 @@ public abstract class Piece implements Cloneable{
 		return ans;
 	}
 
-	public abstract void setAvailablePositions();
+	public abstract void setLegalMoves();
 
-	public List<String> getAvailablePositions() {
-		return availablePositions;
+	public List<Move> getLegalMoves() {
+		return availableMoves;
 	}
 
 	public String getPosition() {
 		return currentPosition;
 	}
 
+	public void setPosition(String position) {
+		currentPosition = position;
+	}
+
 	public void sendToGraveyard(List<Piece> graveyard) {
 		this.currentPosition = null;
-		this.availablePositions = null;
+		this.availableMoves = null;
 		graveyard.add(this);
 	}
 
 	public boolean isDead() {
-		return this.currentPosition == null && this.availablePositions == null;
+		return this.currentPosition == null && this.availableMoves == null;
 	}
 
-	public boolean isThreatened(List<Point> attackerAvailablePositions) {
-		return attackerAvailablePositions.contains(currentPosition);
-	}
+	/*
+	 * this function is wrong in current modification, so if you wanna use it
+	 * edit it.
+	 */
+	// public boolean isThreatened(List<Point> attackerAvailablePositions) {
+	// return attackerAvailablePositions.contains(currentPosition);
+	// }
 
 	public int getArmyType() {
 		return armyType;
@@ -117,18 +121,18 @@ public abstract class Piece implements Cloneable{
 		Tile tile = chessBoard.get(squarePosition);
 		Piece piece = tile.getPiece();
 		if (piece == null) {
-			return HAS_NO_PIECE;
+			return Tile.HAS_NO_PIECE;
 		}
 		// System.out.println(this.armyType + " " + piece);
 
 		// if the piece has the same color of "this" piece
 		if (this.armyType == piece.armyType) {
-			return HAS_ALLY;
+			return Tile.HAS_ALLY;
 		}
 
 		// if the piece has different color of "this" piece
 		else {
-			return HAS_ENEMY;
+			return Tile.HAS_ENEMY;
 		}
 		// if object is not a piece , then it's a free square
 	}
@@ -140,16 +144,14 @@ public abstract class Piece implements Cloneable{
 		return toPosition;
 	}
 
-//	private Point graveCoordinate;
+	public int getPieceValue() {
+		return pieceValue;
+	}
 
 	public Image getImage() {
 		return myImage;
 	}
 
-//	public void addGraveCoordinate(Point x) {
-//		graveCoordinate = x;
-//		System.out.println(x);
-//	}
 
 	public void draw(Graphics g) {
 		if (!isDead()) {
@@ -158,17 +160,29 @@ public abstract class Piece implements Cloneable{
 					pieceHieght, null);
 		} else {
 			System.out.println("Draw in grave: ");
-//			g.drawImage(myImage, graveCoordinate.x, graveCoordinate.y,
-//					pieceWidht, pieceHieght, null);
+			// g.drawImage(myImage, graveCoordinate.x, graveCoordinate.y,
+			// pieceWidht, pieceHieght, null);
 		}
 	}
-	
-	public void setAvailablePositions (List defenders) {
-	}
-	
-	
+
+	/*
+	 * What this function do ?
+	 * @see java.lang.Object#clone()
+	 */
+//	public void setAvailablePositions(List defenders) {
+//	}
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
+
+	public boolean hasMoveTo(String position) {
+		boolean ans = false;
+		for (Move m : getLegalMoves()) {
+			ans |= m.getToPosition().equals(position);
+		}
+		return ans;
+	}
+
 }
