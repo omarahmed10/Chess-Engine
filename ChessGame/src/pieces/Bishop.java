@@ -3,14 +3,15 @@ package pieces;
 import java.awt.Image;
 import java.util.Map;
 
+import chessBoard.ChessBoard;
 import chessBoard.Move;
 import chessBoard.Tile;
 
 public class Bishop extends Piece {
 
 	public Bishop(String initialPosition, int armyType,
-			Map<String, Tile> chesschessBoard, Image pieceImage) {
-		super(initialPosition, armyType, chesschessBoard, pieceImage);
+			ChessBoard chessBoard, Image pieceImage) {
+		super(initialPosition, armyType, chessBoard, pieceImage);
 		pieceValue = 330;
 	}
 

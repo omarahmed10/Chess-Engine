@@ -24,7 +24,7 @@ public class Grave extends JPanel {
 	private List<JButton> deadPieces;
 
 	protected Grave(int x, int y) {
-		setBounds(x, y, 8 * Tile.TILEWIDTH, Piece.pieceHieght);
+		setBounds(x, y, 8 * Tile.TILEWIDTH, Piece.PIECE_HEIGHT);
 		setBackground(UIManager
 				.getColor("OptionPane.warningDialog.titlePane.background"));
 		deadPieces = new LinkedList<JButton>();
@@ -33,12 +33,12 @@ public class Grave extends JPanel {
 
 	protected void addDeadPiece(Piece deadPiece) {
 		Image img = deadPiece.getImage();
-		Image newimg = img.getScaledInstance(Piece.pieceWidth,
-				Piece.pieceHieght, java.awt.Image.SCALE_SMOOTH);
+		Image newimg = img.getScaledInstance(Piece.PIECE_WIDTH,
+				Piece.PIECE_HEIGHT, java.awt.Image.SCALE_SMOOTH);
 		JButton button = new JButton(new ImageIcon(newimg));
 		setButtonProp(button);
-		button.setBounds(getX() + graveWidth, 0, Piece.pieceWidth,
-				Piece.pieceHieght);
+		button.setBounds(getX() + graveWidth, 0, Piece.PIECE_WIDTH,
+				Piece.PIECE_HEIGHT);
 		graveWidth += button.getWidth() + 10;
 		deadPieces.add(button);
 		addButtons();

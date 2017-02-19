@@ -10,10 +10,10 @@ public class Move {
 	public final static int ATTACK = 1;
 	private String toPosition;
 	private int motionOutput;
-	private Map<String, Tile> chessBoard;
+	private ChessBoard chessBoard;
 	private Piece requiredToMove;
 
-	public Move(Map<String, Tile> chessBoard, Piece requiredToMove,
+	public Move(ChessBoard chessBoard, Piece requiredToMove,
 			String toPosition) {
 		this.toPosition = toPosition;
 		this.chessBoard = chessBoard;
@@ -29,13 +29,14 @@ public class Move {
 				// yard
 				if (requiredToMove
 						.getSquareStatus(toPosition) == Tile.HAS_ENEMY) {
-					chessBoard.get(toPosition).getPiece()
-							.sendToGraveyard(graveyard);
+					chessBoard.getCurrentPlayer().addDeadPiece(chessBoard
+							.getBoardMap().get(toPosition).getPiece());
 					motionOutput = ATTACK;
 				} else {
 					motionOutput = MOVE;
 				}
-				chessBoard.get(requiredToMove.getPosition()).setPiece(null);
+				chessBoard.getBoardMap().get(requiredToMove.getPosition())
+						.setPiece(null);
 				requiredToMove.setPosition(toPosition);
 			}
 
@@ -44,6 +45,10 @@ public class Move {
 
 	public String getToPosition() {
 		return toPosition;
+	}
+
+	public Piece getRequiredPiece() {
+		return requiredToMove;
 	}
 
 	public boolean isDone() {

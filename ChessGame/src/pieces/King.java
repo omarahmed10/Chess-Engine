@@ -6,14 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import chessBoard.ChessBoard;
 import chessBoard.Move;
 import chessBoard.Tile;
 
 public class King extends Piece {
 
 	public King(String initialPosition, int armyType,
-			Map<String, Tile> chesschessBoard, Image pieceImage) {
-		super(initialPosition, armyType, chesschessBoard, pieceImage);
+			ChessBoard chessBoard, Image pieceImage) {
+		super(initialPosition, armyType, chessBoard, pieceImage);
 		pieceValue = 10000;
 	}
 
@@ -41,9 +42,9 @@ public class King extends Piece {
 
 	public boolean isChecked() {
 
-		for (String tilePosition : chessBoard.keySet()) {
-			if (chessBoard.get(tilePosition).hasPiece()) {
-				Piece piece = chessBoard.get(tilePosition).getPiece();
+		for (String tilePosition : boardMap.keySet()) {
+			if (boardMap.get(tilePosition).hasPiece()) {
+				Piece piece = boardMap.get(tilePosition).getPiece();
 				// if the piece is enemy and has the king's position in its
 				// available positions , then the king is checked
 				if (piece.getArmyType() != this.armyType
@@ -61,9 +62,9 @@ public class King extends Piece {
 	public boolean isStalemate() {
 		if (!isChecked()) {
 
-			for (String tilePosition : chessBoard.keySet()) {
-				if (chessBoard.get(tilePosition).hasPiece()) {
-					Piece piece = chessBoard.get(tilePosition).getPiece();
+			for (String tilePosition : boardMap.keySet()) {
+				if (boardMap.get(tilePosition).hasPiece()) {
+					Piece piece = boardMap.get(tilePosition).getPiece();
 					// if there is at least one piece in this army has at least
 					// one legal move , then it is not a stalemate
 					if (piece.getArmyType() == this.armyType
@@ -84,7 +85,7 @@ public class King extends Piece {
 		// In this copy , the contents of the original board are the same of the
 		// copy
 		// I want to make method to iterate and make copy of each value
-		Map<String, Tile> boardCopy = new HashMap<>(chessBoard);
+		Map<String, Tile> boardCopy = new HashMap<>(boardMap);
 
 		List<Piece> graveyardCopy = new ArrayList<Piece>();
 		Piece checkerCopy;
@@ -98,12 +99,12 @@ public class King extends Piece {
 					e.printStackTrace();
 				}
 
-				for (String tilePosition : chessBoard.keySet()) {
-					if (chessBoard.get(tilePosition).hasPiece()
-							&& chessBoard.get(tilePosition).getPiece()
+				for (String tilePosition : boardMap.keySet()) {
+					if (boardMap.get(tilePosition).hasPiece()
+							&& boardMap.get(tilePosition).getPiece()
 									.getArmyType() == this.getArmyType()) {
 
-						Piece defender = chessBoard.get(tilePosition)
+						Piece defender = boardMap.get(tilePosition)
 								.getPiece();
 						if (defender.hasMoveTo(checker.getPosition())) {
 							defender.move(checker.getPosition(), graveyardCopy);

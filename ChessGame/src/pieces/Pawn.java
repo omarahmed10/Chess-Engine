@@ -3,6 +3,7 @@ package pieces;
 import java.awt.Image;
 import java.util.Map;
 
+import chessBoard.ChessBoard;
 import chessBoard.Move;
 import chessBoard.Tile;
 
@@ -11,8 +12,8 @@ public class Pawn extends Piece {
 	private String initialPosition;
 
 	public Pawn(String initialPosition, int armyType,
-			Map<String, Tile> chesschessBoard, Image pieceImage) {
-		super(initialPosition, armyType, chesschessBoard, pieceImage);
+			ChessBoard chessBoard, Image pieceImage) {
+		super(initialPosition, armyType, chessBoard, pieceImage);
 		this.initialPosition = initialPosition;
 		pieceValue = 100;
 	}

@@ -1,37 +1,36 @@
 package player;
 
-
 import chessBoard.ChessBoard;
 import chessBoard.Move;
 import pieces.Piece;
 
-public class MiniMax implements MoveStartegy {
+public class AlphaBeta implements MoveStartegy {
 
 	private BoardEvaluator boardEvaluator;
 	private Move bestMove;
 
-	public MiniMax() {
+	public AlphaBeta() {
 		boardEvaluator = new BoardEvaluator();
 	}
 
 	@Override
 	public Move excute(ChessBoard board, int depth, boolean maximizingPlayer) {
 		if (board.getCurrentPlayer().getArmyType() == Piece.WHITE_ARMY) {
-			minimax(board, depth, false);
+			alphabeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, depth, true);
 		} else {
-			minimax(board, depth, true);
+			alphabeta(board, Integer.MIN_VALUE, Integer.MAX_VALUE, depth,
+					false);
 		}
 		return bestMove;
 	}
 
-	private int minimax(ChessBoard board, int depth, boolean maximizingPlayer) {
+	private int alphabeta(ChessBoard board, int α, int β, int depth,
+			boolean maximizingPlayer) {
 		int bestVal;
 		if (depth == 0 /* or checkmate */) {
 			return boardEvaluator.evaluate(board);
 		}
-
-		if (maximizingPlayer) {// computer Turn.(maximizing Player). which call
-								// minimum player
+		if (maximizingPlayer) {
 			bestVal = Integer.MIN_VALUE;
 			// you have to get the current player every turn because players is
 			// switching every move.
@@ -43,15 +42,18 @@ public class MiniMax implements MoveStartegy {
 				move.doMove(board.getPlayerGrave());
 				if (move.isDone()) {
 					board.switchPlayers();
-					int currentValue = minimax(board, depth - 1, false);
+					int currentValue = alphabeta(board, α, β, depth - 1, false);
 					if (currentValue >= bestVal) {
 						bestVal = currentValue;
 						bestMove = move;
 					}
+					α = Math.max(α, currentValue);
+					if (β <= α) { // β cut-off
+						break;
+					}
 				}
 			}
-			return bestVal;
-		} else {// Human Turn.(minimizing Player). which call maximum player
+		} else {
 			bestVal = Integer.MAX_VALUE;
 			// you have to get the current player every turn because players is
 			// switching every move.
@@ -63,15 +65,18 @@ public class MiniMax implements MoveStartegy {
 				move.doMove(board.getPlayerGrave());
 				if (move.isDone()) {
 					board.switchPlayers();
-					int currentValue = minimax(board, depth - 1, false);
-					if (currentValue >= bestVal) {
+					int currentValue = alphabeta(board, α, β, depth - 1, true);
+					if (currentValue <= bestVal) {
 						bestVal = currentValue;
 						bestMove = move;
 					}
+					β = Math.min(β, currentValue);
+					if (β <= α) { // α cut-off
+						break;
+					}
 				}
 			}
-			return bestVal;
 		}
+		return bestVal;
 	}
-
 }

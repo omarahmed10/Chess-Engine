@@ -34,8 +34,8 @@ public class ChessTiles {
 				status = 1;
 			for (int j = 0; j < 8; j++) {
 				String s = (char) i + "" + arr[j];
-				int x = ChessBoard.startPoint.x + Tile.TILEWIDTH * (i - 65);
-				int y = ChessBoard.startPoint.y + Tile.TILEWIDTH * j;
+				int x = ChessBoard.START_POINT.x + Tile.TILEWIDTH * (i - 65);
+				int y = ChessBoard.START_POINT.y + Tile.TILEWIDTH * j;
 				allTiles.put(s, new Tile(Parent, new Point(x, y), s, status));
 				if (status == 1)
 					status = 2;
@@ -43,8 +43,8 @@ public class ChessTiles {
 					status = 1;
 			}
 		}
-		createWhitePieces(whitePlayer);
-		createBlackPieces(blackPlayer);
+		createWhitePieces(Parent,whitePlayer);
+		createBlackPieces(Parent,blackPlayer);
 		setAvailablePositions();
 	}
 
@@ -52,81 +52,77 @@ public class ChessTiles {
 	 * there are two piece of the same name for the same player so the name will
 	 * be given a number to be indicated with..
 	 */
-	private static int pieceNo = 0;
 
-	private static void createWhitePieces(Player whitePlayer) {
+	private static void createWhitePieces(ChessBoard Parent,Player whitePlayer) {
 		String whitePiece = "white";
 		for (int i = 0; i < 8; i++) {
 			String s = (char) (65 + i) + "" + 2;
 			Tile parent = allTiles.get(s);
-			Piece p = new Pawn(parent.getPostion(), Piece.WHITE_ARMY, allTiles,
+			Piece p = new Pawn(parent.getPostion(), Piece.WHITE_ARMY, Parent,
 					ImageLoader.loadImage(whitePiece + "Pawn.png").getImage());
 			parent.setPiece(p);
 			whitePlayer.addPiece(p);
 		}
-		createPiece("A1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
-		createPiece("H1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
-		pieceNo = 0;
-		createPiece("B1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
-		createPiece("G1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
-		pieceNo = 0;
-		createPiece("C1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
-		createPiece("F1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
-		pieceNo = 0;
-		createPiece("D1", Piece.WHITE_ARMY, whitePiece, "King", whitePlayer);
-		createPiece("E1", Piece.WHITE_ARMY, whitePiece, "Queen", whitePlayer);
+		createPiece(Parent,"A1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
+		createPiece(Parent,"H1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
+		createPiece(Parent,"B1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
+		createPiece(Parent,"G1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
+		createPiece(Parent,"C1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
+		createPiece(Parent,"F1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
+		createPiece(Parent,"D1", Piece.WHITE_ARMY, whitePiece, "King", whitePlayer);
+		createPiece(Parent,"E1", Piece.WHITE_ARMY, whitePiece, "Queen", whitePlayer);
 	}
 
-	private static void createBlackPieces(Player blackPlayer) {
+	private static void createBlackPieces(ChessBoard Parent,Player blackPlayer) {
 		String blackPiece = "black";
 		for (int i = 0; i < 8; i++) {
 			String s = (char) (65 + i) + "" + 7;
 			Tile parent = allTiles.get(s);
-			Piece p = new Pawn(parent.getPostion(), Piece.BLACK_ARMY, allTiles,
+			Piece p = new Pawn(parent.getPostion(), Piece.BLACK_ARMY, Parent,
 					ImageLoader.loadImage(blackPiece + "Pawn.png").getImage());
 			parent.setPiece(p);
 			blackPlayer.addPiece(p);
 		}
-		createPiece("A8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
-		createPiece("H8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
-		createPiece("B8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
-		createPiece("G8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
-		createPiece("C8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
-		createPiece("F8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
-		createPiece("D8", Piece.BLACK_ARMY, blackPiece, "King", blackPlayer);
-		createPiece("E8", Piece.BLACK_ARMY, blackPiece, "Queen", blackPlayer);
+		createPiece(Parent,"A8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
+		createPiece(Parent,"H8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
+		createPiece(Parent,"B8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
+		createPiece(Parent,"G8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
+		createPiece(Parent,"C8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
+		createPiece(Parent,"F8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
+		createPiece(Parent,"D8", Piece.BLACK_ARMY, blackPiece, "King", blackPlayer);
+		createPiece(Parent,"E8", Piece.BLACK_ARMY, blackPiece, "Queen", blackPlayer);
 	}
 
-	private static void createPiece(String position, int army, String pieceType,
+	private static void createPiece(ChessBoard Parent,String position, int army, String pieceType,
 			String pieceName, Player player) {
 		Tile parent = allTiles.get(position);
 		Piece p;
 		if (position == "A8" || position == "A1" || position == "H1"
 				|| position == "H8") {
-			p = new Rook(parent.getPostion(), army, allTiles, ImageLoader
+			p = new Rook(parent.getPostion(), army, Parent, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 		} else if (position == "B8" || position == "B1" || position == "G8"
 				|| position == "G1") {
-			p = new Knight(parent.getPostion(), army, allTiles, ImageLoader
+			p = new Knight(parent.getPostion(), army, Parent, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 		} else if (position == "F8" || position == "F1" || position == "C8"
 				|| position == "C1") {
-			p = new Bishop(parent.getPostion(), army, allTiles, ImageLoader
+			p = new Bishop(parent.getPostion(), army, Parent, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 		} else if (position == "D8" || position == "D1") {
-			p = new King(parent.getPostion(), army, allTiles, ImageLoader
+			p = new King(parent.getPostion(), army, Parent, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 			player.setKing(p);
 		} else if (position == "E8" || position == "E1") {
-			p = new Queen(parent.getPostion(), army, allTiles, ImageLoader
+			p = new Queen(parent.getPostion(), army, Parent, ImageLoader
 					.loadImage(pieceType + pieceName + ".png").getImage());
 			parent.setPiece(p);
 			player.addPiece(p);

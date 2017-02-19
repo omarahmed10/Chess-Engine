@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import chessBoard.ChessBoard;
 import chessBoard.Move;
 import chessBoard.Tile;
 
@@ -16,19 +17,18 @@ public abstract class Piece implements Cloneable {
 	public final static int BLACK_ARMY = 1;
 	protected final static String BOARD_LOW_LIMIT = "A1";
 	protected final static String BOARD_HIGH_LIMIT = "H8";
-	public final static int pieceWidth = Tile.TILEWIDTH - 25;
-	public final static int pieceHieght = Tile.TILEWIDTH - 15;
-	public final static int MOVED = 0;
-	public final static int ATTACK = 1;
+	public final static int PIECE_WIDTH = Tile.TILEWIDTH - 25;
+	public final static int PIECE_HEIGHT = Tile.TILEWIDTH - 15;
 	protected int armyType;
 	protected String currentPosition;
 	protected List<Move> availableMoves;
 	protected Image myImage;
-	protected Map<String, Tile> chessBoard;
+	protected Map<String, Tile> boardMap;
+	protected ChessBoard chessBoard;
 	protected int pieceValue;
 
-	public Piece(String initialPosition, int armyType,
-			Map<String, Tile> chessBoard, Image pieceImage) {
+	public Piece(String initialPosition, int armyType, ChessBoard chessBoard,
+			Image pieceImage) {
 		if (armyType != WHITE_ARMY && armyType != BLACK_ARMY) {
 			throw new RuntimeException("Error , -1 for white & 1 for black");
 		}
@@ -38,6 +38,7 @@ public abstract class Piece implements Cloneable {
 		availableMoves = new ArrayList<Move>();
 		this.myImage = pieceImage;
 		this.chessBoard = chessBoard;
+		this.boardMap = chessBoard.getBoardMap();
 		if (isOutOfBounds(initialPosition)) {
 			throw new RuntimeException(
 					"The point is out of the chessBoard's bounds");
@@ -54,13 +55,13 @@ public abstract class Piece implements Cloneable {
 				// if this position has an enemy , then we send it to the grave
 				// yard
 				if (getSquareStatus(toPosition) == Tile.HAS_ENEMY) {
-					chessBoard.get(toPosition).getPiece()
+					boardMap.get(toPosition).getPiece()
 							.sendToGraveyard(graveyard);
-					ans = ATTACK;
+					ans = Move.ATTACK;
 				} else {
-					ans = MOVED;
+					ans = Move.MOVE;
 				}
-				chessBoard.get(currentPosition).setPiece(null);
+				boardMap.get(currentPosition).setPiece(null);
 				currentPosition = toPosition;
 				// setAvaliablePositions must be called for all pieces.
 				// setAvailablePositions();
@@ -118,7 +119,7 @@ public abstract class Piece implements Cloneable {
 	}
 
 	public int getSquareStatus(String squarePosition) {
-		Tile tile = chessBoard.get(squarePosition);
+		Tile tile = boardMap.get(squarePosition);
 		Piece piece = tile.getPiece();
 		if (piece == null) {
 			return Tile.HAS_NO_PIECE;
@@ -152,12 +153,11 @@ public abstract class Piece implements Cloneable {
 		return myImage;
 	}
 
-
 	public void draw(Graphics g) {
 		if (!isDead()) {
-			Point position = chessBoard.get(currentPosition).getCoordinate();
-			g.drawImage(myImage, position.x + 10, position.y + 5, pieceWidth,
-					pieceHieght, null);
+			Point position = boardMap.get(currentPosition).getCoordinate();
+			g.drawImage(myImage, position.x + 10, position.y + 5, PIECE_WIDTH,
+					PIECE_HEIGHT, null);
 		} else {
 			System.out.println("Draw in grave: ");
 			// g.drawImage(myImage, graveCoordinate.x, graveCoordinate.y,
@@ -167,10 +167,11 @@ public abstract class Piece implements Cloneable {
 
 	/*
 	 * What this function do ?
+	 * 
 	 * @see java.lang.Object#clone()
 	 */
-//	public void setAvailablePositions(List defenders) {
-//	}
+	// public void setAvailablePositions(List defenders) {
+	// }
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {

@@ -10,10 +10,10 @@ public class Player {
 	private List<Piece> myArmy;
 	private LinkedList<Piece> myGraveYard;
 	private final int armyType;
-	private List<List<Move>> legalMoves;
+	private List<Move> legalMoves;
 	private Piece myKing;
 
-	public Player(int armyType) {
+	public Player(int armyType, PlayerType playerType) {
 		this.armyType = armyType;
 		myArmy = new LinkedList<Piece>();
 		myGraveYard = new LinkedList<Piece>();
@@ -35,14 +35,21 @@ public class Player {
 		return myGraveYard;
 	}
 
+	public void addDeadPiece(Piece e) {
+		myArmy.remove(e);
+		myGraveYard.add(e);
+	}
+
 	public int getArmyType() {
 		return armyType;
 	}
 
-	public List<List<Move>> getLegalMoves() {
-		legalMoves = new LinkedList<List<Move>>();
-		for(Piece piece : myArmy){
-			legalMoves.add(piece.getLegalMoves());
+	public List<Move> getLegalMoves() {
+		legalMoves = new LinkedList<Move>();
+		for (Piece piece : myArmy) {
+			for (Move m : piece.getLegalMoves()) {
+				legalMoves.add(m);
+			}
 		}
 		return legalMoves;
 	}

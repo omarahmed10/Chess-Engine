@@ -9,10 +9,12 @@ import javax.swing.JPanel;
 
 import pieces.Piece;
 import player.Player;
+import player.PlayerType;
 
 public class ChessBoard {
 
-	public final static Point startPoint = new Point(0, Piece.pieceHieght);
+	public final static Point START_POINT = new Point(0, Piece.PIECE_HEIGHT);
+	public final static int WHITE_TURN = 1, BLACK_TURN = -1;
 	private Map<String, Tile> tilesMap;
 	private Piece currentPiece;
 	private final Player whitePlayer;
@@ -25,11 +27,11 @@ public class ChessBoard {
 	private int playerTurn;
 	private JPanel guiBoard;
 
-	public ChessBoard(JPanel guiBoard) {
-		whitePlayer = new Player(Piece.WHITE_ARMY);
-		blackPlayer = new Player(Piece.BLACK_ARMY);
+	public ChessBoard(JPanel guiBoard, PlayerType opponentPlayer) {
+		whitePlayer = new Player(Piece.WHITE_ARMY, PlayerType.HUMAN);
+		blackPlayer = new Player(Piece.BLACK_ARMY, opponentPlayer);
 		// whitePlayer start the game.
-		playerTurn = 1;
+		playerTurn = WHITE_TURN;
 		this.guiBoard = guiBoard;
 		//////////////////////////////
 		ChessTiles.createSkeletonBoard(this, whitePlayer, blackPlayer);
@@ -37,22 +39,14 @@ public class ChessBoard {
 		//////////////////////////////
 		blackGraveYard = new Grave(guiBoard.getX(), guiBoard.getY());
 		whiteGraveYard = new Grave(guiBoard.getX(),
-				ChessBoard.startPoint.y + 8 * Tile.TILEWIDTH);
+				ChessBoard.START_POINT.y + 8 * Tile.TILEWIDTH);
 		guiBoard.add(whiteGraveYard);
 		guiBoard.add(blackGraveYard);
 	}
 
 	public boolean markAvaliableTiles(Piece selectedPiece, List<Move> list) {
-		if (playerTurn == 1
-				&& whitePlayer.getArmy().contains(selectedPiece)) {
-			currentPiece = selectedPiece;
-			for (Move m : list) {
-				tilesMap.get(m.getToPosition()).setAvaliability(true);
-			}
-			guiBoard.repaint();
-			return true;
-		} else if (playerTurn == -1
-				&& blackPlayer.getArmy().contains(selectedPiece)) {
+		Player currentPlayer = getCurrentPlayer();
+		if (currentPlayer.getArmy().contains(selectedPiece)) {
 			currentPiece = selectedPiece;
 			for (Move m : list) {
 				tilesMap.get(m.getToPosition()).setAvaliability(true);
@@ -68,7 +62,7 @@ public class ChessBoard {
 		Grave grave;
 		// if white player kill a piece then it will be add in black player
 		// grave yard and vice versa.
-		if (playerTurn == 1) {
+		if (playerTurn == WHITE_TURN) {
 			grave = blackGraveYard;
 			graveyard = blackPlayer.getDeadArmy();
 		} else {
@@ -77,16 +71,41 @@ public class ChessBoard {
 		}
 		if (currentPiece != null) {
 			int action = currentPiece.move(toPosition, graveyard);
-			if (action == Piece.ATTACK || action == Piece.MOVED) {
+			if (action == Move.ATTACK || action == Move.MOVE) {
 				tilesMap.get(toPosition).setPiece(currentPiece);
 				ChessTiles.setAvailablePositions();
 				// switch turns.
-				playerTurn *= -1;
-				if (action == Piece.ATTACK) {
+				playerTurn *= BLACK_TURN;
+				if (action == Move.ATTACK) {
 					grave.addDeadPiece(graveyard.getLast());
 				}
 				guiBoard.repaint();
+				gui.Board.pieceMovmentSound.start();
 			}
+		}
+	}
+
+	public List<Piece> getPlayerGrave() {
+		if (playerTurn == WHITE_TURN) {
+			return blackPlayer.getDeadArmy();
+		} else {
+			return whitePlayer.getDeadArmy();
+		}
+	}
+
+	public void switchPlayers() {
+		playerTurn *= BLACK_TURN;
+	}
+
+	public Map<String, Tile> getBoardMap() {
+		return tilesMap;
+	}
+
+	public Player getCurrentPlayer() {
+		if (playerTurn == WHITE_TURN) {
+			return whitePlayer;
+		} else {
+			return blackPlayer;
 		}
 	}
 
