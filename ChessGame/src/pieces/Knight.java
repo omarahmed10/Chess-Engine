@@ -1,17 +1,16 @@
 package pieces;
 
 import java.awt.Image;
-import java.util.Map;
-
-import chessBoard.ChessBoard;
+import java.awt.Point;
+import chessBoard.ChessTiles;
 import chessBoard.Move;
 import chessBoard.Tile;
 
 public class Knight extends Piece {
 
-	public Knight(String initialPosition, int armyType,
-			ChessBoard chessBoard, Image pieceImage) {
-		super(initialPosition, armyType, chessBoard, pieceImage);
+	public Knight(String initialPosition, int armyType, Point myCoordinate,
+			Image pieceImage) {
+		super(initialPosition, armyType, myCoordinate, pieceImage);
 		pieceValue = 320;
 	}
 
@@ -36,16 +35,16 @@ public class Knight extends Piece {
 				// The square available must not be out of bounds
 				// if the square is free or has an enemy (hasn't an ally
 				// piece) , then we can add this position
-				if (!isOutOfBounds(position)
-						&& getSquareStatus(position) != Tile.HAS_ALLY) {
-					availableMoves.add(new Move(chessBoard, this, position));
+				if (!isOutOfBounds(position) && ChessTiles.getSquareStatus(this,
+						position) != Tile.HAS_ALLY) {
+					availableMoves.add(new Move(this, position));
 				}
 
 				position = translate(currentPosition, y, x);
 
-				if (!isOutOfBounds(position)
-						&& getSquareStatus(position) != Tile.HAS_ALLY) {
-					availableMoves.add(new Move(chessBoard, this, position));
+				if (!isOutOfBounds(position) && ChessTiles.getSquareStatus(this,
+						position) != Tile.HAS_ALLY) {
+					availableMoves.add(new Move(this, position));
 				}
 
 			}

@@ -1,17 +1,17 @@
 package pieces;
 
 import java.awt.Image;
-import java.util.Map;
-
-import chessBoard.ChessBoard;
+import java.awt.Point;
+import chessBoard.ChessTiles;
 import chessBoard.Move;
 import chessBoard.Tile;
 
 public class Bishop extends Piece {
 
-	public Bishop(String initialPosition, int armyType,
-			ChessBoard chessBoard, Image pieceImage) {
-		super(initialPosition, armyType, chessBoard, pieceImage);
+
+	public Bishop(String initialPosition, int armyType, Point myCoordinate,
+			Image pieceImage) {
+		super(initialPosition, armyType, myCoordinate, pieceImage);
 		pieceValue = 330;
 	}
 
@@ -77,15 +77,15 @@ public class Bishop extends Piece {
 
 	private boolean freeSquare(String position) {
 		// if the square is free , then add it
-		if (getSquareStatus(position) == Tile.HAS_NO_PIECE) {
-			availableMoves.add(new Move(chessBoard, this, position));
+		if (ChessTiles.getSquareStatus(this,position) == Tile.HAS_NO_PIECE) {
+			availableMoves.add(new Move(this, position));
 		}
 
 		else {
 			// if the square has an enemy piece , we add the point and stop
 			// and if it's an ally , then stop
-			if (getSquareStatus(position) == Tile.HAS_ENEMY) {
-				availableMoves.add(new Move(chessBoard, this, position));
+			if (ChessTiles.getSquareStatus(this,position) == Tile.HAS_ENEMY) {
+				availableMoves.add(new Move(this, position));
 			}
 			return false;
 		}

@@ -6,7 +6,7 @@ import java.util.List;
 import chessBoard.Move;
 import pieces.Piece;
 
-public class Player {
+public class Player implements Cloneable {
 	private List<Piece> myArmy;
 	private LinkedList<Piece> myGraveYard;
 	private final int armyType;
@@ -20,7 +20,16 @@ public class Player {
 	}
 
 	public void addPiece(Piece piece) {
-		myArmy.add(piece);
+		if (piece.isDead()) {
+			myGraveYard.add(piece);
+		} else {
+			myArmy.add(piece);
+		}
+	}
+
+	public void reset() {
+		myGraveYard = new LinkedList<>();
+		myArmy = new LinkedList<>();
 	}
 
 	public void setKing(Piece king) {
@@ -36,8 +45,16 @@ public class Player {
 	}
 
 	public void addDeadPiece(Piece e) {
+		e.sendToGraveyard();
 		myArmy.remove(e);
 		myGraveYard.add(e);
+	}
+
+	public void awakeLastDeadPiece(String position, Piece killedPiece) {
+		int index = myGraveYard.indexOf(killedPiece);
+		myGraveYard.remove(index);
+		killedPiece.awake(position);
+		myArmy.add(killedPiece);
 	}
 
 	public int getArmyType() {
@@ -54,4 +71,9 @@ public class Player {
 		return legalMoves;
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
+	}
 }

@@ -17,7 +17,7 @@ import pieces.Piece;
  * @author omar
  *
  */
-public class Tile implements MouseListener {
+public class Tile implements MouseListener, Cloneable {
 	public final static int TILEWIDTH = 50;
 	public final static int HAS_NO_PIECE = 3;
 	public final static int HAS_ENEMY = 4;
@@ -57,7 +57,7 @@ public class Tile implements MouseListener {
 		return myPiece;
 	}
 
-	public String getPostion() {
+	public String getPosition() {
 		return myPosition;
 	}
 
@@ -119,6 +119,11 @@ public class Tile implements MouseListener {
 	}
 
 	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
 	public void mouseClicked(java.awt.event.MouseEvent e) {
 		// TODO Auto-generated method stub
 
@@ -140,5 +145,9 @@ public class Tile implements MouseListener {
 	public void mouseExited(java.awt.event.MouseEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+	@Override
+	public String toString() {
+		return "Tile: "+hashCode();
 	}
 }

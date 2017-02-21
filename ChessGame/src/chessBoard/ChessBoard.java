@@ -1,9 +1,11 @@
 package chessBoard;
 
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.swing.JPanel;
 
@@ -11,20 +13,16 @@ import pieces.Piece;
 import player.Player;
 import player.PlayerType;
 
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
 
 	public final static Point START_POINT = new Point(0, Piece.PIECE_HEIGHT);
 	public final static int WHITE_TURN = 1, BLACK_TURN = -1;
+	private Player whitePlayer, blackPlayer;
+	private int playerTurn;
 	private Map<String, Tile> tilesMap;
 	private Piece currentPiece;
-	private final Player whitePlayer;
-	private final Player blackPlayer;
 	private Grave whiteGraveYard, blackGraveYard;
-	/*
-	 * if playerTurn is (1) then it is whitePlayer turn if (-1) then it is
-	 * blackPlayer turn
-	 */
-	private int playerTurn;
+	private Stack<Map<String, Tile>> history;
 	private JPanel guiBoard;
 
 	public ChessBoard(JPanel guiBoard, PlayerType opponentPlayer) {
@@ -37,6 +35,10 @@ public class ChessBoard {
 		ChessTiles.createSkeletonBoard(this, whitePlayer, blackPlayer);
 		tilesMap = ChessTiles.getBoardTiles();
 		//////////////////////////////
+		// Adding first board
+		// history = new Stack<>();
+		// Map<String, Tile> mapCopy = getCopy(tilesMap);
+		// history.add(mapCopy);
 		blackGraveYard = new Grave(guiBoard.getX(), guiBoard.getY());
 		whiteGraveYard = new Grave(guiBoard.getX(),
 				ChessBoard.START_POINT.y + 8 * Tile.TILEWIDTH);
@@ -57,6 +59,10 @@ public class ChessBoard {
 		return false;
 	}
 
+	/*
+	 * move function for Human Player only the mouse listener will call this
+	 * one.
+	 */
 	public void moveSelectedPiece(String toPosition) {
 		LinkedList<Piece> graveyard;
 		Grave grave;
@@ -70,26 +76,26 @@ public class ChessBoard {
 			graveyard = whitePlayer.getDeadArmy();
 		}
 		if (currentPiece != null) {
-			int action = currentPiece.move(toPosition, graveyard);
-			if (action == Move.ATTACK || action == Move.MOVE) {
-				tilesMap.get(toPosition).setPiece(currentPiece);
-				ChessTiles.setAvailablePositions();
-				// switch turns.
-				playerTurn *= BLACK_TURN;
-				if (action == Move.ATTACK) {
-					grave.addDeadPiece(graveyard.getLast());
-				}
-				guiBoard.repaint();
-				gui.Board.pieceMovmentSound.start();
-			}
-		}
-	}
+			Move m = currentPiece.hasMoveTo(toPosition);
+			if (m != null) {
+				m.doMove(getOpponentPlayer());
+				if (m.isDone()) {
+					ChessTiles.setAvailablePositions(tilesMap);
+					// switch turns.
+					switchPlayers();
+					if (m.isAttack()) {
+						grave.addDeadPiece(graveyard.getLast());
+					}
+					guiBoard.repaint();
 
-	public List<Piece> getPlayerGrave() {
-		if (playerTurn == WHITE_TURN) {
-			return blackPlayer.getDeadArmy();
-		} else {
-			return whitePlayer.getDeadArmy();
+					// // Adding the board after movement
+					// Map<String, Tile> mapCopy = getCopy(tilesMap);
+					// history.add(mapCopy);
+
+					gui.Board.pieceMovmentSound.start();
+
+				}
+			}
 		}
 	}
 
@@ -97,8 +103,12 @@ public class ChessBoard {
 		playerTurn *= BLACK_TURN;
 	}
 
-	public Map<String, Tile> getBoardMap() {
-		return tilesMap;
+	public void setBoardMap(Map<String, Tile> map) {
+		tilesMap = map;
+	}
+
+	public void setPlayerTurn(int pT) {
+		playerTurn = pT;
 	}
 
 	public Player getCurrentPlayer() {
@@ -109,7 +119,119 @@ public class ChessBoard {
 		}
 	}
 
+	public Player getOpponentPlayer() {
+		if (playerTurn == WHITE_TURN) {
+			return blackPlayer;
+		} else {
+			return whitePlayer;
+		}
+	}
+
+	public Map<String, Tile> getMap() {
+		return tilesMap;
+	}
+
+	private Map<String, Tile> getCopy(Map<String, Tile> originalChessBoard) {
+		Map<String, Tile> chessBoardCopy = new HashMap<String, Tile>();
+		copyPlayer(this.whitePlayer);
+		copyPlayer(this.blackPlayer);
+		for (String position : originalChessBoard.keySet()) {
+			try {
+				Tile tileCopy = (Tile) originalChessBoard.get(position).clone();
+				if (tileCopy.getPiece() != null) {
+					Piece pieceCopy = (Piece) tileCopy.getPiece().clone();
+					if (pieceCopy.getArmyType() == Piece.WHITE_ARMY) {
+						this.whitePlayer.addPiece(pieceCopy);
+					} else {
+						this.blackPlayer.addPiece(pieceCopy);
+					}
+				}
+				chessBoardCopy.put(position, tileCopy);
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return chessBoardCopy;
+	}
+
+	private void copyEverything() {
+		this.tilesMap = getCopy(this.tilesMap);
+	}
+
+	private static void copyPlayer(Player player) {
+		try {
+			Player playerCopy = (Player) player.clone();
+			player = playerCopy;
+			player.reset();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void undo() {
+		history.pop();
+
+		tilesMap = getCopy(history.peek());
+	}
+
+	public Stack<Map<String, Tile>> getHistory() {
+		return history;
+	}
+
+	// public boolean isCheckmate(List<Piece> checkers) {
+	//
+	// Map<String, Tile> boardCopy = new HashMap<>(tilesMap);
+	//
+	// List<Piece> graveyardCopy = new ArrayList<Piece>();
+	// Piece checkerCopy;
+	//
+	// if (isChecked()) {
+	// for (Piece checker : checkers) {
+	// try {
+	// checkerCopy = (Piece) checker.clone();
+	// } catch (CloneNotSupportedException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// for (String tilePosition : tilesMap.keySet()) {
+	// if (tilesMap.get(tilePosition).hasPiece()
+	// && tilesMap.get(tilePosition).getPiece()
+	// .getArmyType() == this.getArmyType()) {
+	//
+	// Piece defender = tilesMap.get(tilePosition).getPiece();
+	// if (defender.hasMoveTo(checker.getPosition())) {
+	// defender.move(checker.getPosition(), graveyardCopy);
+	// // if ()
+	// }
+	//
+	// }
+	// }
+	// }
+	//
+	// return true;
+	// }
+	//
+	// return false;
+	// }
+
+	private Piece getKingInTurn() {
+		return null;
+	}
+
+	private List<Piece> getCheckers() {
+		return null;
+	}
+
 	public void addMouseListener(Tile t) {
 		guiBoard.addMouseListener(t);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		copyEverything();
+		return super.clone();
 	}
 }

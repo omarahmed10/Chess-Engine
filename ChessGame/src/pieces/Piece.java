@@ -5,9 +5,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import chessBoard.ChessBoard;
 import chessBoard.Move;
 import chessBoard.Tile;
 
@@ -22,23 +19,21 @@ public abstract class Piece implements Cloneable {
 	protected int armyType;
 	protected String currentPosition;
 	protected List<Move> availableMoves;
+	private Point tileCoordinate;
 	protected Image myImage;
-	protected Map<String, Tile> boardMap;
-	protected ChessBoard chessBoard;
 	protected int pieceValue;
 
-	public Piece(String initialPosition, int armyType, ChessBoard chessBoard,
+	public Piece(String initialPosition, int armyType, Point myCoordinate,
 			Image pieceImage) {
 		if (armyType != WHITE_ARMY && armyType != BLACK_ARMY) {
 			throw new RuntimeException("Error , -1 for white & 1 for black");
 		}
 		//
 		currentPosition = initialPosition;
+		this.tileCoordinate = myCoordinate;
 		this.armyType = armyType;
 		availableMoves = new ArrayList<Move>();
 		this.myImage = pieceImage;
-		this.chessBoard = chessBoard;
-		this.boardMap = chessBoard.getBoardMap();
 		if (isOutOfBounds(initialPosition)) {
 			throw new RuntimeException(
 					"The point is out of the chessBoard's bounds");
@@ -46,32 +41,32 @@ public abstract class Piece implements Cloneable {
 		// setAvailablePositions(chessBoard);
 	}
 
-	public int move(String toPosition, List<Piece> graveyard) {
-		int ans = -1;
-		if (!isDead()) {
-
-			if (hasMoveTo(toPosition)) {
-
-				// if this position has an enemy , then we send it to the grave
-				// yard
-				if (getSquareStatus(toPosition) == Tile.HAS_ENEMY) {
-					boardMap.get(toPosition).getPiece()
-							.sendToGraveyard(graveyard);
-					ans = Move.ATTACK;
-				} else {
-					ans = Move.MOVE;
-				}
-				boardMap.get(currentPosition).setPiece(null);
-				currentPosition = toPosition;
-				// setAvaliablePositions must be called for all pieces.
-				// setAvailablePositions();
-				// move is completed
-			}
-
-		}
-		// move isn't completed
-		return ans;
-	}
+	// public int move(String toPosition, List<Piece> graveyard) {
+	// int ans = -1;
+	// if (!isDead()) {
+	//
+	// if (hasMoveTo(toPosition)) {
+	//
+	// // if this position has an enemy , then we send it to the grave
+	// // yard
+	// if (getSquareStatus(toPosition) == Tile.HAS_ENEMY) {
+	// boardMap.get(toPosition).getPiece()
+	// .sendToGraveyard(graveyard);
+	// ans = Move.ATTACK;
+	// } else {
+	// ans = Move.MOVE;
+	// }
+	// boardMap.get(currentPosition).setPiece(null);
+	// currentPosition = toPosition;
+	// // setAvaliablePositions must be called for all pieces.
+	// // setAvailablePositions();
+	// // move is completed
+	// }
+	//
+	// }
+	// // move isn't completed
+	// return ans;
+	// }
 
 	public abstract void setLegalMoves();
 
@@ -83,20 +78,23 @@ public abstract class Piece implements Cloneable {
 		return currentPosition;
 	}
 
-	public void setPosition(String position) {
+	public void setPosition(String position, Point newCoordinates) {
+		tileCoordinate = newCoordinates;
 		currentPosition = position;
 	}
 
-	public void sendToGraveyard(List<Piece> graveyard) {
+	public void sendToGraveyard() {
 		this.currentPosition = null;
 		this.availableMoves = null;
-		graveyard.add(this);
 	}
 
 	public boolean isDead() {
 		return this.currentPosition == null && this.availableMoves == null;
 	}
 
+	public void awake(String position) {
+		this.currentPosition = position;
+	}
 	/*
 	 * this function is wrong in current modification, so if you wanna use it
 	 * edit it.
@@ -118,25 +116,25 @@ public abstract class Piece implements Cloneable {
 		return x > 72 || x < 65 || y < 1 || y > 8;
 	}
 
-	public int getSquareStatus(String squarePosition) {
-		Tile tile = boardMap.get(squarePosition);
-		Piece piece = tile.getPiece();
-		if (piece == null) {
-			return Tile.HAS_NO_PIECE;
-		}
-		// System.out.println(this.armyType + " " + piece);
-
-		// if the piece has the same color of "this" piece
-		if (this.armyType == piece.armyType) {
-			return Tile.HAS_ALLY;
-		}
-
-		// if the piece has different color of "this" piece
-		else {
-			return Tile.HAS_ENEMY;
-		}
-		// if object is not a piece , then it's a free square
-	}
+	// public int getSquareStatus(String squarePosition) {
+	// Tile tile = boardMap.get(squarePosition);
+	// Piece piece = tile.getPiece();
+	// if (piece == null) {
+	// return Tile.HAS_NO_PIECE;
+	// }
+	// // System.out.println(this.armyType + " " + piece);
+	//
+	// // if the piece has the same color of "this" piece
+	// if (this.armyType == piece.armyType) {
+	// return Tile.HAS_ALLY;
+	// }
+	//
+	// // if the piece has different color of "this" piece
+	// else {
+	// return Tile.HAS_ENEMY;
+	// }
+	// // if object is not a piece , then it's a free square
+	// }
 
 	protected String translate(String currPosition, int dx, int dy) {
 		int x = (int) currPosition.charAt(0) + dx;
@@ -155,9 +153,8 @@ public abstract class Piece implements Cloneable {
 
 	public void draw(Graphics g) {
 		if (!isDead()) {
-			Point position = boardMap.get(currentPosition).getCoordinate();
-			g.drawImage(myImage, position.x + 10, position.y + 5, PIECE_WIDTH,
-					PIECE_HEIGHT, null);
+			g.drawImage(myImage, tileCoordinate.x + 10, tileCoordinate.y + 5,
+					PIECE_WIDTH, PIECE_HEIGHT, null);
 		} else {
 			System.out.println("Draw in grave: ");
 			// g.drawImage(myImage, graveCoordinate.x, graveCoordinate.y,
@@ -174,16 +171,24 @@ public abstract class Piece implements Cloneable {
 	// }
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
+	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public boolean hasMoveTo(String position) {
-		boolean ans = false;
+	public Move hasMoveTo(String position) {
 		for (Move m : getLegalMoves()) {
-			ans |= m.getToPosition().equals(position);
+			if (m.getToPosition().equals(position)) {
+				return m;
+			}
 		}
-		return ans;
+		return null;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getName() + " " + currentPosition;
+	}
+	// public void setTilesMap(Map<String, Tile> chessBoard) {
+	// this.chessBoard = chessBoard;
+	// }
 }

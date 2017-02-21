@@ -1,47 +1,104 @@
 package chessBoard;
 
-import java.util.List;
 import java.util.Map;
-
 import pieces.Piece;
+import player.Player;
 
 public class Move {
 	public final static int MOVE = 0;
 	public final static int ATTACK = 1;
-	private String toPosition;
+	public final static Map<String, Tile> MOVE_FAILED = null;
+	private String toPosition, fromPosition;
 	private int motionOutput;
-	private ChessBoard chessBoard;
-	private Piece requiredToMove;
+	private Piece requiredToMove, killedPiece;
 
-	public Move(ChessBoard chessBoard, Piece requiredToMove,
-			String toPosition) {
+	public Move(Piece requiredToMove, String toPosition) {
 		this.toPosition = toPosition;
-		this.chessBoard = chessBoard;
 		this.requiredToMove = requiredToMove;
+		fromPosition = requiredToMove.getPosition();
 	}
 
-	public void doMove(List<Piece> graveyard) {
+	public void doMove(Player OpponentPlayer) {
 		if (!requiredToMove.isDead()) {
 
-			if (requiredToMove.getLegalMoves().contains(toPosition)) {
+			if (requiredToMove.hasMoveTo(toPosition) != null) {
 
 				// if this position has an enemy , then we send it to the grave
 				// yard
-				if (requiredToMove
-						.getSquareStatus(toPosition) == Tile.HAS_ENEMY) {
-					chessBoard.getCurrentPlayer().addDeadPiece(chessBoard
-							.getBoardMap().get(toPosition).getPiece());
+				if (ChessTiles.getSquareStatus(requiredToMove,
+						toPosition) == Tile.HAS_ENEMY) {
+					killedPiece = ChessTiles.getBoardTiles().get(toPosition)
+							.getPiece();
+					OpponentPlayer.addDeadPiece(killedPiece);
 					motionOutput = ATTACK;
 				} else {
 					motionOutput = MOVE;
 				}
-				chessBoard.getBoardMap().get(requiredToMove.getPosition())
-						.setPiece(null);
-				requiredToMove.setPosition(toPosition);
+				Map<String, Tile> board = ChessTiles.getBoardTiles();
+				Tile oldTile = board.get(requiredToMove.getPosition());
+				oldTile.setPiece(null);
+				Tile newTile = board.get(toPosition);
+				newTile.setPiece(requiredToMove);
+				requiredToMove.setPosition(toPosition, newTile.getCoordinate());
 			}
-
 		}
 	}
+
+	/*
+	 * for check mate and stale mate and Undo Action for Game.
+	 */
+	public void undoMove(Player OpponentPlayer) {
+		String oldPosition = fromPosition, currentPosition = toPosition;
+		if (isDone()) {
+			if (isAttack()) {
+				OpponentPlayer.awakeLastDeadPiece(currentPosition, killedPiece);
+			}
+			Map<String, Tile> board = ChessTiles.getBoardTiles();
+			Tile oldTile = board.get(currentPosition);
+			oldTile.setPiece(null);
+			Tile newTile = board.get(oldPosition);
+			newTile.setPiece(requiredToMove);
+			requiredToMove.setPosition(oldPosition, newTile.getCoordinate());
+		}
+	}
+
+	/*
+	 * still under construction for AI only.
+	 */
+//	public Map<String, Tile> dofakeMove(Player opponentPlayer) {
+//		if (!requiredToMove.isDead()) {
+//			try {
+//				Piece fakePiece = (Piece) requiredToMove.clone();
+//				Player fakePlayer = (Player) opponentPlayer.clone();
+//				if (fakePiece.hasMoveTo(toPosition) != null) {
+//
+//					// if this position has an enemy , then we send it to the
+//					// grave
+//					// yard
+//					if (ChessTiles.getSquareStatus(fakePiece,
+//							toPosition) == Tile.HAS_ENEMY) {
+//						fakePlayer.addDeadPiece(ChessTiles.getBoardTiles()
+//								.get(toPosition).getPiece());
+//						motionOutput = ATTACK;
+//					} else {
+//						motionOutput = MOVE;
+//					}
+//					Map<String, Tile> board = ChessBoard
+//							.getCopy(ChessTiles.getBoardTiles());
+//					Tile oldTile = board.get(fakePiece.getPosition());
+//					oldTile.setPiece(null);
+//					Tile newTile = board.get(toPosition);
+//					newTile.setPiece(requiredToMove);
+//					fakePiece.setPosition(toPosition, newTile.getCoordinate());
+//					return board;
+//				}
+//			} catch (CloneNotSupportedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		return MOVE_FAILED;
+//	}
 
 	public String getToPosition() {
 		return toPosition;

@@ -1,20 +1,22 @@
 package pieces;
 
 import java.awt.Image;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import chessBoard.ChessBoard;
+import chessBoard.ChessTiles;
 import chessBoard.Move;
 import chessBoard.Tile;
+import player.Player;
 
 public class King extends Piece {
 
-	public King(String initialPosition, int armyType,
-			ChessBoard chessBoard, Image pieceImage) {
-		super(initialPosition, armyType, chessBoard, pieceImage);
+	public King(String initialPosition, int armyType, Point myCoordinate,
+			Image pieceImage) {
+		super(initialPosition, armyType, myCoordinate, pieceImage);
 		pieceValue = 10000;
 	}
 
@@ -31,9 +33,9 @@ public class King extends Piece {
 				// The square available must not be out of bounds
 				// if the square is free or has an enemy (hasn't an ally
 				// piece) , then we can add this position
-				if (!isOutOfBounds(position)
-						&& getSquareStatus(position) != Tile.HAS_ALLY) {
-					availableMoves.add(new Move(chessBoard, this, position));
+				if (!isOutOfBounds(position) && ChessTiles.getSquareStatus(this,
+						position) != Tile.HAS_ALLY) {
+					availableMoves.add(new Move(this, position));
 				}
 			}
 		}
@@ -41,14 +43,14 @@ public class King extends Piece {
 	}
 
 	public boolean isChecked() {
-
+		Map<String, Tile> boardMap = ChessTiles.getBoardTiles();
 		for (String tilePosition : boardMap.keySet()) {
 			if (boardMap.get(tilePosition).hasPiece()) {
 				Piece piece = boardMap.get(tilePosition).getPiece();
 				// if the piece is enemy and has the king's position in its
 				// available positions , then the king is checked
 				if (piece.getArmyType() != this.armyType
-						&& piece.hasMoveTo(currentPosition)) {
+						&& piece.hasMoveTo(currentPosition) != null) {
 					return true;
 				}
 			}
@@ -60,6 +62,7 @@ public class King extends Piece {
 	// Stalemate is when the king is not checked and there is no legal move to
 	// any piece
 	public boolean isStalemate() {
+		Map<String, Tile> boardMap = ChessTiles.getBoardTiles();
 		if (!isChecked()) {
 
 			for (String tilePosition : boardMap.keySet()) {
@@ -80,11 +83,12 @@ public class King extends Piece {
 		return false;
 	}
 
-	public boolean isCheckmate(List<Piece> checkers) {
+	public boolean isCheckmate(List<Piece> checkers, Player OpponentPlayer) {
 
 		// In this copy , the contents of the original board are the same of the
 		// copy
 		// I want to make method to iterate and make copy of each value
+		Map<String, Tile> boardMap = ChessTiles.getBoardTiles();
 		Map<String, Tile> boardCopy = new HashMap<>(boardMap);
 
 		List<Piece> graveyardCopy = new ArrayList<Piece>();
@@ -104,11 +108,10 @@ public class King extends Piece {
 							&& boardMap.get(tilePosition).getPiece()
 									.getArmyType() == this.getArmyType()) {
 
-						Piece defender = boardMap.get(tilePosition)
-								.getPiece();
-						if (defender.hasMoveTo(checker.getPosition())) {
-							defender.move(checker.getPosition(), graveyardCopy);
-							// if ()
+						Piece defender = boardMap.get(tilePosition).getPiece();
+						Move m = defender.hasMoveTo(checker.getPosition());
+						if (m != null) {
+							m.doMove(OpponentPlayer);
 						}
 
 					}

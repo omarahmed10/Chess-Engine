@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
+
 import gui.ImageLoader;
 import pieces.Bishop;
 import pieces.King;
@@ -23,7 +24,7 @@ public class ChessTiles {
 	 * this array is used for simplicity.
 	 */
 	private final static int arr[] = { 8, 7, 6, 5, 4, 3, 2, 1 };
-	private final static Map<String, Tile> allTiles = new HashMap<String, Tile>();
+	private static Map<String, Tile> allTiles = new HashMap<String, Tile>();
 
 	public static void createSkeletonBoard(ChessBoard Parent,
 			Player whitePlayer, Player blackPlayer) {
@@ -43,9 +44,9 @@ public class ChessTiles {
 					status = 1;
 			}
 		}
-		createWhitePieces(Parent,whitePlayer);
-		createBlackPieces(Parent,blackPlayer);
-		setAvailablePositions();
+		createWhitePieces(whitePlayer);
+		createBlackPieces(blackPlayer);
+		setAvailablePositions(allTiles);
 	}
 
 	/*
@@ -53,96 +54,121 @@ public class ChessTiles {
 	 * be given a number to be indicated with..
 	 */
 
-	private static void createWhitePieces(ChessBoard Parent,Player whitePlayer) {
+	private static void createWhitePieces(Player whitePlayer) {
 		String whitePiece = "white";
 		for (int i = 0; i < 8; i++) {
 			String s = (char) (65 + i) + "" + 2;
 			Tile parent = allTiles.get(s);
-			Piece p = new Pawn(parent.getPostion(), Piece.WHITE_ARMY, Parent,
+			Piece p = new Pawn(parent.getPosition(), Piece.WHITE_ARMY,
+					parent.getCoordinate(),
 					ImageLoader.loadImage(whitePiece + "Pawn.png").getImage());
 			parent.setPiece(p);
 			whitePlayer.addPiece(p);
 		}
-		createPiece(Parent,"A1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
-		createPiece(Parent,"H1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
-		createPiece(Parent,"B1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
-		createPiece(Parent,"G1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
-		createPiece(Parent,"C1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
-		createPiece(Parent,"F1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
-		createPiece(Parent,"D1", Piece.WHITE_ARMY, whitePiece, "King", whitePlayer);
-		createPiece(Parent,"E1", Piece.WHITE_ARMY, whitePiece, "Queen", whitePlayer);
+		createPiece("A1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
+		createPiece("H1", Piece.WHITE_ARMY, whitePiece, "Rock", whitePlayer);
+		createPiece("B1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
+		createPiece("G1", Piece.WHITE_ARMY, whitePiece, "Knight", whitePlayer);
+		createPiece("C1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
+		createPiece("F1", Piece.WHITE_ARMY, whitePiece, "Bishop", whitePlayer);
+		createPiece("D1", Piece.WHITE_ARMY, whitePiece, "King", whitePlayer);
+		createPiece("E1", Piece.WHITE_ARMY, whitePiece, "Queen", whitePlayer);
 	}
 
-	private static void createBlackPieces(ChessBoard Parent,Player blackPlayer) {
+	private static void createBlackPieces(Player blackPlayer) {
 		String blackPiece = "black";
 		for (int i = 0; i < 8; i++) {
 			String s = (char) (65 + i) + "" + 7;
 			Tile parent = allTiles.get(s);
-			Piece p = new Pawn(parent.getPostion(), Piece.BLACK_ARMY, Parent,
+			Piece p = new Pawn(parent.getPosition(), Piece.BLACK_ARMY,
+					parent.getCoordinate(),
 					ImageLoader.loadImage(blackPiece + "Pawn.png").getImage());
 			parent.setPiece(p);
 			blackPlayer.addPiece(p);
 		}
-		createPiece(Parent,"A8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
-		createPiece(Parent,"H8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
-		createPiece(Parent,"B8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
-		createPiece(Parent,"G8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
-		createPiece(Parent,"C8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
-		createPiece(Parent,"F8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
-		createPiece(Parent,"D8", Piece.BLACK_ARMY, blackPiece, "King", blackPlayer);
-		createPiece(Parent,"E8", Piece.BLACK_ARMY, blackPiece, "Queen", blackPlayer);
+		createPiece("A8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
+		createPiece("H8", Piece.BLACK_ARMY, blackPiece, "Rock", blackPlayer);
+		createPiece("B8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
+		createPiece("G8", Piece.BLACK_ARMY, blackPiece, "Knight", blackPlayer);
+		createPiece("C8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
+		createPiece("F8", Piece.BLACK_ARMY, blackPiece, "Bishop", blackPlayer);
+		createPiece("D8", Piece.BLACK_ARMY, blackPiece, "King", blackPlayer);
+		createPiece("E8", Piece.BLACK_ARMY, blackPiece, "Queen", blackPlayer);
 	}
 
-	private static void createPiece(ChessBoard Parent,String position, int army, String pieceType,
+	private static void createPiece(String position, int army, String pieceType,
 			String pieceName, Player player) {
 		Tile parent = allTiles.get(position);
 		Piece p;
 		if (position == "A8" || position == "A1" || position == "H1"
 				|| position == "H8") {
-			p = new Rook(parent.getPostion(), army, Parent, ImageLoader
-					.loadImage(pieceType + pieceName + ".png").getImage());
+			p = new Rook(parent.getPosition(), army, parent.getCoordinate(),
+					ImageLoader.loadImage(pieceType + pieceName + ".png")
+							.getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 		} else if (position == "B8" || position == "B1" || position == "G8"
 				|| position == "G1") {
-			p = new Knight(parent.getPostion(), army, Parent, ImageLoader
-					.loadImage(pieceType + pieceName + ".png").getImage());
+			p = new Knight(parent.getPosition(), army, parent.getCoordinate(),
+					ImageLoader.loadImage(pieceType + pieceName + ".png")
+							.getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 		} else if (position == "F8" || position == "F1" || position == "C8"
 				|| position == "C1") {
-			p = new Bishop(parent.getPostion(), army, Parent, ImageLoader
-					.loadImage(pieceType + pieceName + ".png").getImage());
+			p = new Bishop(parent.getPosition(), army, parent.getCoordinate(),
+					ImageLoader.loadImage(pieceType + pieceName + ".png")
+							.getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 		} else if (position == "D8" || position == "D1") {
-			p = new King(parent.getPostion(), army, Parent, ImageLoader
-					.loadImage(pieceType + pieceName + ".png").getImage());
+			p = new King(parent.getPosition(), army, parent.getCoordinate(),
+					ImageLoader.loadImage(pieceType + pieceName + ".png")
+							.getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 			player.setKing(p);
 		} else if (position == "E8" || position == "E1") {
-			p = new Queen(parent.getPostion(), army, Parent, ImageLoader
-					.loadImage(pieceType + pieceName + ".png").getImage());
+			p = new Queen(parent.getPosition(), army, parent.getCoordinate(),
+					ImageLoader.loadImage(pieceType + pieceName + ".png")
+							.getImage());
 			parent.setPiece(p);
 			player.addPiece(p);
 		}
 
 	}
 
-	public static void setAvailablePositions() {
-		for (int i = 65; i <= 72; i++) {
-			for (int j : arr) {
-				String s = (char) i + "" + j;
-				Piece p = allTiles.get(s).getPiece();
-				if (p != null)
-					p.setLegalMoves();
-			}
+	public static void setAvailablePositions(Map<String, Tile> map) {
+		for (String position : map.keySet()) {
+			Piece p = map.get(position).getPiece();
+			if (p != null)
+				p.setLegalMoves();
 		}
 	}
 
 	public static Map<String, Tile> getBoardTiles() {
 		return allTiles;
+	}
+
+	public static int getSquareStatus(Piece requiredToMove,
+			String squarePosition) {
+		Tile tile = allTiles.get(squarePosition);
+		Piece piece = tile.getPiece();
+		if (piece == null) {
+			return Tile.HAS_NO_PIECE;
+		}
+		// System.out.println(this.armyType + " " + piece);
+
+		// if the piece has the same color of "this" piece
+		if (requiredToMove.getArmyType() == piece.getArmyType()) {
+			return Tile.HAS_ALLY;
+		}
+
+		// if the piece has different color of "this" piece
+		else {
+			return Tile.HAS_ENEMY;
+		}
+		// if object is not a piece , then it's a free square
 	}
 
 	public static void drawTiles(Graphics g) {

@@ -39,7 +39,7 @@ public class AlphaBeta implements MoveStartegy {
 			 * board.getCurrentPlayer().getLegalMoves();
 			 */
 			for (Move move : board.getCurrentPlayer().getLegalMoves()) {
-				move.doMove(board.getPlayerGrave());
+				move.doMove(board.getOpponentPlayer());
 				if (move.isDone()) {
 					board.switchPlayers();
 					int currentValue = alphabeta(board, α, β, depth - 1, false);
@@ -62,7 +62,7 @@ public class AlphaBeta implements MoveStartegy {
 			 * board.getCurrentPlayer().getLegalMoves();
 			 */
 			for (Move move : board.getCurrentPlayer().getLegalMoves()) {
-				move.doMove(board.getPlayerGrave());
+				move.doMove(board.getOpponentPlayer());
 				if (move.isDone()) {
 					board.switchPlayers();
 					int currentValue = alphabeta(board, α, β, depth - 1, true);
