@@ -95,13 +95,6 @@ public abstract class Piece implements Cloneable {
 	public void awake(String position) {
 		this.currentPosition = position;
 	}
-	/*
-	 * this function is wrong in current modification, so if you wanna use it
-	 * edit it.
-	 */
-	// public boolean isThreatened(List<Point> attackerAvailablePositions) {
-	// return attackerAvailablePositions.contains(currentPosition);
-	// }
 
 	public int getArmyType() {
 		return armyType;
@@ -162,14 +155,6 @@ public abstract class Piece implements Cloneable {
 		}
 	}
 
-	/*
-	 * What this function do ?
-	 * 
-	 * @see java.lang.Object#clone()
-	 */
-	// public void setAvailablePositions(List defenders) {
-	// }
-
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
@@ -188,7 +173,4 @@ public abstract class Piece implements Cloneable {
 	public String toString() {
 		return getClass().getName() + " " + currentPosition;
 	}
-	// public void setTilesMap(Map<String, Tile> chessBoard) {
-	// this.chessBoard = chessBoard;
-	// }
 }

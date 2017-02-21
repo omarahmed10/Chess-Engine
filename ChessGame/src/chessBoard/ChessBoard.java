@@ -135,6 +135,7 @@ public class ChessBoard implements Cloneable {
 		Map<String, Tile> chessBoardCopy = new HashMap<String, Tile>();
 		copyPlayer(this.whitePlayer);
 		copyPlayer(this.blackPlayer);
+		
 		for (String position : originalChessBoard.keySet()) {
 			try {
 				Tile tileCopy = (Tile) originalChessBoard.get(position).clone();
@@ -180,50 +181,13 @@ public class ChessBoard implements Cloneable {
 		return history;
 	}
 
-	// public boolean isCheckmate(List<Piece> checkers) {
-	//
-	// Map<String, Tile> boardCopy = new HashMap<>(tilesMap);
-	//
-	// List<Piece> graveyardCopy = new ArrayList<Piece>();
-	// Piece checkerCopy;
-	//
-	// if (isChecked()) {
-	// for (Piece checker : checkers) {
-	// try {
-	// checkerCopy = (Piece) checker.clone();
-	// } catch (CloneNotSupportedException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	// for (String tilePosition : tilesMap.keySet()) {
-	// if (tilesMap.get(tilePosition).hasPiece()
-	// && tilesMap.get(tilePosition).getPiece()
-	// .getArmyType() == this.getArmyType()) {
-	//
-	// Piece defender = tilesMap.get(tilePosition).getPiece();
-	// if (defender.hasMoveTo(checker.getPosition())) {
-	// defender.move(checker.getPosition(), graveyardCopy);
-	// // if ()
-	// }
-	//
-	// }
-	// }
-	// }
-	//
-	// return true;
-	// }
-	//
-	// return false;
-	// }
-
-	private Piece getKingInTurn() {
-		return null;
-	}
-
-	private List<Piece> getCheckers() {
-		return null;
-	}
+//	private Piece getKingInTurn() {
+//		return null;
+//	}
+//
+//	private List<Piece> getCheckers() {
+//		return null;
+//	}
 
 	public void addMouseListener(Tile t) {
 		guiBoard.addMouseListener(t);
