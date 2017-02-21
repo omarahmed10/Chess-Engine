@@ -18,7 +18,7 @@ public class Move {
 		fromPosition = requiredToMove.getPosition();
 	}
 
-	public void doMove(Player OpponentPlayer) {
+	public void doMove(Player opponentPlayer) {
 		if (!requiredToMove.isDead()) {
 
 			if (requiredToMove.hasMoveTo(toPosition) != null) {
@@ -29,7 +29,7 @@ public class Move {
 						toPosition) == Tile.HAS_ENEMY) {
 					killedPiece = ChessTiles.getBoardTiles().get(toPosition)
 							.getPiece();
-					OpponentPlayer.addDeadPiece(killedPiece);
+					opponentPlayer.addDeadPiece(killedPiece);
 					motionOutput = ATTACK;
 				} else {
 					motionOutput = MOVE;
@@ -47,11 +47,11 @@ public class Move {
 	/*
 	 * for check mate and stale mate and Undo Action for Game.
 	 */
-	public void undoMove(Player OpponentPlayer) {
+	public void undoMove(Player opponentPlayer) {
 		String oldPosition = fromPosition, currentPosition = toPosition;
 		if (isDone()) {
 			if (isAttack()) {
-				OpponentPlayer.awakeLastDeadPiece(currentPosition, killedPiece);
+				opponentPlayer.awakeLastDeadPiece(currentPosition, killedPiece);
 			}
 			Map<String, Tile> board = ChessTiles.getBoardTiles();
 			Tile oldTile = board.get(currentPosition);

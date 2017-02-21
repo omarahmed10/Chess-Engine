@@ -56,5 +56,17 @@ public class Pawn extends Piece {
 			availableMoves.add(new Move(this, position));
 		}
 	}
+	
+	public boolean isPromotable() {
+		final Integer promotableRow;
+		
+		if (getArmyType() == WHITE_ARMY) {
+			promotableRow = 8;
+		} else {
+			promotableRow = 1;
+		}
+
+		return getPosition().contains(promotableRow.toString());
+	}
 
 }

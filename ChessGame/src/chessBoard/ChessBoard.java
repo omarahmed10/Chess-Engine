@@ -22,8 +22,9 @@ public class ChessBoard implements Cloneable {
 	private Map<String, Tile> tilesMap;
 	private Piece currentPiece;
 	private Grave whiteGraveYard, blackGraveYard;
-	private Stack<Map<String, Tile>> history;
+	private Stack<Move> history;
 	private JPanel guiBoard;
+	private Move currentMove;
 
 	public ChessBoard(JPanel guiBoard, PlayerType opponentPlayer) {
 		whitePlayer = new Player(Piece.WHITE_ARMY, PlayerType.HUMAN);
@@ -35,10 +36,7 @@ public class ChessBoard implements Cloneable {
 		ChessTiles.createSkeletonBoard(this, whitePlayer, blackPlayer);
 		tilesMap = ChessTiles.getBoardTiles();
 		//////////////////////////////
-		// Adding first board
-		// history = new Stack<>();
-		// Map<String, Tile> mapCopy = getCopy(tilesMap);
-		// history.add(mapCopy);
+		
 		blackGraveYard = new Grave(guiBoard.getX(), guiBoard.getY());
 		whiteGraveYard = new Grave(guiBoard.getX(),
 				ChessBoard.START_POINT.y + 8 * Tile.TILEWIDTH);
@@ -76,21 +74,20 @@ public class ChessBoard implements Cloneable {
 			graveyard = whitePlayer.getDeadArmy();
 		}
 		if (currentPiece != null) {
-			Move m = currentPiece.hasMoveTo(toPosition);
-			if (m != null) {
-				m.doMove(getOpponentPlayer());
-				if (m.isDone()) {
+			currentMove = currentPiece.hasMoveTo(toPosition);
+			if (currentMove != null) {
+				currentMove.doMove(getOpponentPlayer());
+				if (currentMove.isDone()) {
 					ChessTiles.setAvailablePositions(tilesMap);
 					// switch turns.
 					switchPlayers();
-					if (m.isAttack()) {
+					if (currentMove.isAttack()) {
 						grave.addDeadPiece(graveyard.getLast());
 					}
 					guiBoard.repaint();
 
-					// // Adding the board after movement
-					// Map<String, Tile> mapCopy = getCopy(tilesMap);
-					// history.add(mapCopy);
+					// Adding Move after movement
+					history.add(currentMove);
 
 					gui.Board.pieceMovmentSound.start();
 
@@ -174,20 +171,12 @@ public class ChessBoard implements Cloneable {
 	public void undo() {
 		history.pop();
 
-		tilesMap = getCopy(history.peek());
+		currentMove.undoMove(getCurrentPlayer());
 	}
 
-	public Stack<Map<String, Tile>> getHistory() {
+	public Stack<Move> getHistory() {
 		return history;
 	}
-
-//	private Piece getKingInTurn() {
-//		return null;
-//	}
-//
-//	private List<Piece> getCheckers() {
-//		return null;
-//	}
 
 	public void addMouseListener(Tile t) {
 		guiBoard.addMouseListener(t);
