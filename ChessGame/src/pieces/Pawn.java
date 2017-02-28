@@ -2,6 +2,7 @@ package pieces;
 
 import java.awt.Image;
 import java.awt.Point;
+import java.util.ArrayList;
 
 import chessBoard.ChessTiles;
 import chessBoard.Move;
@@ -20,8 +21,12 @@ public class Pawn extends Piece {
 
 	@Override
 	public void setLegalMoves() {
-		availableMoves.clear();
-
+		if (availableMoves == null) {
+			availableMoves = new ArrayList<Move>();
+		} else {
+			availableMoves.clear();
+		}
+		
 		final int minStep = 1;
 		int maxStep = minStep;
 		// if pawn in its initial position , it can move one or two steps
@@ -56,10 +61,10 @@ public class Pawn extends Piece {
 			availableMoves.add(new Move(this, position));
 		}
 	}
-	
+
 	public boolean isPromotable() {
 		final Integer promotableRow;
-		
+
 		if (getArmyType() == WHITE_ARMY) {
 			promotableRow = 8;
 		} else {
@@ -69,4 +74,12 @@ public class Pawn extends Piece {
 		return getPosition().contains(promotableRow.toString());
 	}
 
+	@Override
+	public String toString() {
+		int n = armyType;
+		if (n == -1) {
+			n = 0;
+		}
+		return n + "P ";
+	}
 }

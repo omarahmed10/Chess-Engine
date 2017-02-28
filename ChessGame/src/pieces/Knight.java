@@ -51,5 +51,12 @@ public class Knight extends Piece {
 		}
 
 	}
-
+	@Override
+	public String toString() {
+		int n = armyType;
+		if (n == -1) {
+			n = 0;
+		}
+		return  n + "N ";
+	}
 }

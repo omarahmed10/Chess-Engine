@@ -6,12 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-
 import javax.swing.JPanel;
-
 import pieces.Piece;
-import player.Player;
-import player.PlayerType;
+import player.*;
 
 public class ChessBoard implements Cloneable {
 
@@ -25,18 +22,28 @@ public class ChessBoard implements Cloneable {
 	private Stack<Move> history;
 	private JPanel guiBoard;
 	private Move currentMove;
+	private MoveStartegy AIStrategy;
 
+	/**
+	 * @param guiBoard
+	 *            is the panel where the board will drawn.
+	 * @param opponentPlayer
+	 *            is the type of the black player (Human or computer)
+	 */
 	public ChessBoard(JPanel guiBoard, PlayerType opponentPlayer) {
+		this.guiBoard = guiBoard;
+		/*************************************************************/
 		whitePlayer = new Player(Piece.WHITE_ARMY, PlayerType.HUMAN);
 		blackPlayer = new Player(Piece.BLACK_ARMY, opponentPlayer);
-		// whitePlayer start the game.
-		playerTurn = WHITE_TURN;
-		this.guiBoard = guiBoard;
-		//////////////////////////////
 		ChessTiles.createSkeletonBoard(this, whitePlayer, blackPlayer);
+		// whitePlayer start the game.
+		this.playerTurn = WHITE_TURN;
 		tilesMap = ChessTiles.getBoardTiles();
-		//////////////////////////////
-		
+		/*************************************************************/
+
+		if (opponentPlayer == PlayerType.COMPUTER) {
+			AIStrategy = new Minimax();
+		}
 		blackGraveYard = new Grave(guiBoard.getX(), guiBoard.getY());
 		whiteGraveYard = new Grave(guiBoard.getX(),
 				ChessBoard.START_POINT.y + 8 * Tile.TILEWIDTH);
@@ -44,9 +51,14 @@ public class ChessBoard implements Cloneable {
 		guiBoard.add(blackGraveYard);
 	}
 
+	private ChessBoard() {
+
+	}
+
 	public boolean markAvaliableTiles(Piece selectedPiece, List<Move> list) {
-		Player currentPlayer = getCurrentPlayer();
-		if (currentPlayer.getArmy().contains(selectedPiece)) {
+		Player currentPlayer = currentPlayer();
+		if (currentPlayer.getPlayerType() != PlayerType.COMPUTER
+				&& currentPlayer.getArmy().contains(selectedPiece)) {
 			currentPiece = selectedPiece;
 			for (Move m : list) {
 				tilesMap.get(m.getToPosition()).setAvaliability(true);
@@ -76,7 +88,7 @@ public class ChessBoard implements Cloneable {
 		if (currentPiece != null) {
 			currentMove = currentPiece.hasMoveTo(toPosition);
 			if (currentMove != null) {
-				currentMove.doMove(getOpponentPlayer());
+				currentMove.doMove(opponentPlayer());
 				if (currentMove.isDone()) {
 					ChessTiles.setAvailablePositions(tilesMap);
 					// switch turns.
@@ -84,31 +96,48 @@ public class ChessBoard implements Cloneable {
 					if (currentMove.isAttack()) {
 						grave.addDeadPiece(graveyard.getLast());
 					}
-					guiBoard.repaint();
-
 					// Adding Move after movement
-					history.add(currentMove);
-
+					// history.add(currentMove);
+					guiBoard.repaint();
 					gui.Board.pieceMovmentSound.start();
-
+					/*
+					 * the next player becomes the current player because the
+					 * turns is switched
+					 */
+					if (currentPlayer()
+							.getPlayerType() == PlayerType.COMPUTER) {
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								MakeComputerMove();
+							}
+						}).start();
+					}
 				}
 			}
 		}
 	}
 
-	public void switchPlayers() {
-		playerTurn *= BLACK_TURN;
+	public void MakeComputerMove() {
+
+		Move computerMove = AIStrategy.excute(this, 2);
+		guiBoard.repaint();
+//		currentPiece = tilesMap.get(computerMove.getFromPosition()).getPiece();
+//		System.out.println(currentPiece + " " + currentPiece.getPosition() + " "
+//				+ computerMove);
+//		// System.out.println(this);
+//		moveSelectedPiece(computerMove.getToPosition());
 	}
 
-	public void setBoardMap(Map<String, Tile> map) {
-		tilesMap = map;
+	public void switchPlayers() {
+		this.playerTurn *= BLACK_TURN;
 	}
 
 	public void setPlayerTurn(int pT) {
 		playerTurn = pT;
 	}
 
-	public Player getCurrentPlayer() {
+	public Player currentPlayer() {
 		if (playerTurn == WHITE_TURN) {
 			return whitePlayer;
 		} else {
@@ -116,7 +145,15 @@ public class ChessBoard implements Cloneable {
 		}
 	}
 
-	public Player getOpponentPlayer() {
+	public Player whitePlayer() {
+		return this.whitePlayer;
+	}
+
+	public Player blackPlayer() {
+		return blackPlayer;
+	}
+
+	public Player opponentPlayer() {
 		if (playerTurn == WHITE_TURN) {
 			return blackPlayer;
 		} else {
@@ -128,20 +165,55 @@ public class ChessBoard implements Cloneable {
 		return tilesMap;
 	}
 
-	private Map<String, Tile> getCopy(Map<String, Tile> originalChessBoard) {
+	/**
+	 * this is undo is wrong. you have to undo two moves one for current player
+	 * and the other for the opponent player.
+	 */
+	public void undo() {
+		history.pop();
+
+		currentMove.undoMove(currentPlayer());
+	}
+
+	public Stack<Move> getHistory() {
+		return history;
+	}
+
+	private void setBoardFields(Map<String, Tile> board, Player whitePlayer,
+			Player blackPlayer, int playerTurn) {
+		this.tilesMap = board;
+		this.whitePlayer = whitePlayer;
+		this.blackPlayer = blackPlayer;
+		this.playerTurn = playerTurn;
+	}
+
+	public ChessBoard copy() {
+		return copyEverything();
+	}
+
+	private ChessBoard copyEverything() {
+		ChessBoard newBoard = new ChessBoard();
+		Player newWhitePlayer = copyPlayer(this.whitePlayer);
+		Player newBlackPlayer = copyPlayer(this.blackPlayer);
+		newBoard.setBoardFields(
+				getCopy(tilesMap, newWhitePlayer, newBlackPlayer),
+				newWhitePlayer, newBlackPlayer, playerTurn);
+		return newBoard;
+	}
+
+	private Map<String, Tile> getCopy(Map<String, Tile> originalChessBoard,
+			Player whitePlayer, Player blackPlayer) {
 		Map<String, Tile> chessBoardCopy = new HashMap<String, Tile>();
-		copyPlayer(this.whitePlayer);
-		copyPlayer(this.blackPlayer);
-		
+
 		for (String position : originalChessBoard.keySet()) {
 			try {
 				Tile tileCopy = (Tile) originalChessBoard.get(position).clone();
 				if (tileCopy.getPiece() != null) {
 					Piece pieceCopy = (Piece) tileCopy.getPiece().clone();
 					if (pieceCopy.getArmyType() == Piece.WHITE_ARMY) {
-						this.whitePlayer.addPiece(pieceCopy);
+						whitePlayer.addPiece(pieceCopy);
 					} else {
-						this.blackPlayer.addPiece(pieceCopy);
+						blackPlayer.addPiece(pieceCopy);
 					}
 				}
 				chessBoardCopy.put(position, tileCopy);
@@ -153,29 +225,15 @@ public class ChessBoard implements Cloneable {
 		return chessBoardCopy;
 	}
 
-	private void copyEverything() {
-		this.tilesMap = getCopy(this.tilesMap);
-	}
-
-	private static void copyPlayer(Player player) {
+	private Player copyPlayer(Player player) {
 		try {
 			Player playerCopy = (Player) player.clone();
-			player = playerCopy;
-			player.reset();
+			playerCopy.reset();
+			return playerCopy;
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public void undo() {
-		history.pop();
-
-		currentMove.undoMove(getCurrentPlayer());
-	}
-
-	public Stack<Move> getHistory() {
-		return history;
+		return null;
 	}
 
 	public void addMouseListener(Tile t) {
@@ -183,8 +241,23 @@ public class ChessBoard implements Cloneable {
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
-		copyEverything();
-		return super.clone();
+	public String toString() {
+		// TODO Auto-generated method stub
+		String board = currentPlayer().getArmyType() + " " + hashCode()
+				+ ": \n";
+		for (int j = 0; j < 8; j++) {
+			for (int i = 65; i <= 72; i++) {
+				String s = (char) i + "" + ChessTiles.arr[j];
+				Tile t = tilesMap.get(s);
+				if (t.getPiece() != null) {
+					board += t.getPiece().toString();
+				} else {
+					board += "** ";
+				}
+
+			}
+			board += "\n";
+		}
+		return board;
 	}
 }

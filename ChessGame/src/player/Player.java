@@ -2,8 +2,11 @@ package player;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import chessBoard.Move;
+import chessBoard.Tile;
+import pieces.King;
 import pieces.Piece;
 
 public class Player implements Cloneable {
@@ -11,12 +14,14 @@ public class Player implements Cloneable {
 	private LinkedList<Piece> myGraveYard;
 	private final int armyType;
 	private List<Move> legalMoves;
-	private Piece myKing;
+	private King myKing;
+	private final PlayerType playerType;
 
 	public Player(int armyType, PlayerType playerType) {
 		this.armyType = armyType;
 		myArmy = new LinkedList<Piece>();
 		myGraveYard = new LinkedList<Piece>();
+		this.playerType = playerType;
 	}
 
 	public void addPiece(Piece piece) {
@@ -33,7 +38,21 @@ public class Player implements Cloneable {
 	}
 
 	public void setKing(Piece king) {
-		this.myKing = king;
+		this.myKing = (King) king;
+	}
+
+	public boolean isInCheckMate(Map<String, Tile> boardMap,
+			Player opponentPlayer) {
+		return myKing.isCheckmate(boardMap, opponentPlayer);
+	}
+
+	public boolean isInCheck(Map<String, Tile> boardMap) {
+		return myKing.isChecked(boardMap);
+	}
+
+	public boolean isInStaleMate(Map<String, Tile> boardMap,
+			Player opponentPlayer) {
+		return myKing.isStalemate(boardMap, opponentPlayer);
 	}
 
 	public List<Piece> getArmy() {
@@ -61,9 +80,14 @@ public class Player implements Cloneable {
 		return armyType;
 	}
 
+	public PlayerType getPlayerType() {
+		return playerType;
+	}
+
 	public List<Move> getLegalMoves() {
 		legalMoves = new LinkedList<Move>();
 		for (Piece piece : myArmy) {
+			piece.setLegalMoves();
 			for (Move m : piece.getLegalMoves()) {
 				legalMoves.add(m);
 			}
@@ -76,4 +100,5 @@ public class Player implements Cloneable {
 		// TODO Auto-generated method stub
 		return super.clone();
 	}
+
 }

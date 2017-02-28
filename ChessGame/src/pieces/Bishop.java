@@ -2,12 +2,13 @@ package pieces;
 
 import java.awt.Image;
 import java.awt.Point;
+import java.util.ArrayList;
+
 import chessBoard.ChessTiles;
 import chessBoard.Move;
 import chessBoard.Tile;
 
 public class Bishop extends Piece {
-
 
 	public Bishop(String initialPosition, int armyType, Point myCoordinate,
 			Image pieceImage) {
@@ -17,7 +18,11 @@ public class Bishop extends Piece {
 
 	@Override
 	public void setLegalMoves() {
-		availableMoves.clear();
+		if (availableMoves == null) {
+			availableMoves = new ArrayList<Move>();
+		} else {
+			availableMoves.clear();
+		}
 
 		boolean leftUp = true;
 		boolean rightUp = true;
@@ -77,14 +82,14 @@ public class Bishop extends Piece {
 
 	private boolean freeSquare(String position) {
 		// if the square is free , then add it
-		if (ChessTiles.getSquareStatus(this,position) == Tile.HAS_NO_PIECE) {
+		if (ChessTiles.getSquareStatus(this, position) == Tile.HAS_NO_PIECE) {
 			availableMoves.add(new Move(this, position));
 		}
 
 		else {
 			// if the square has an enemy piece , we add the point and stop
 			// and if it's an ally , then stop
-			if (ChessTiles.getSquareStatus(this,position) == Tile.HAS_ENEMY) {
+			if (ChessTiles.getSquareStatus(this, position) == Tile.HAS_ENEMY) {
 				availableMoves.add(new Move(this, position));
 			}
 			return false;
@@ -92,4 +97,12 @@ public class Bishop extends Piece {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		int n = armyType;
+		if (n == -1) {
+			n = 0;
+		}
+		return n + "B ";
+	}
 }

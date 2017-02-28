@@ -2,6 +2,7 @@ package pieces;
 
 import java.awt.Image;
 import java.awt.Point;
+import java.util.ArrayList;
 
 import chessBoard.ChessTiles;
 import chessBoard.Move;
@@ -17,7 +18,11 @@ public class Queen extends Piece {
 
 	@Override
 	public void setLegalMoves() {
-		availableMoves.clear();
+		if (availableMoves == null) {
+			availableMoves = new ArrayList<Move>();
+		} else {
+			availableMoves.clear();
+		}
 
 		// What ROOK does
 		int d = (int) currentPosition.charAt(0);
@@ -121,5 +126,13 @@ public class Queen extends Piece {
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public String toString() {
+		int n = armyType;
+		if (n == -1) {
+			n = 0;
+		}
+		return  n + "Q ";
 	}
 }

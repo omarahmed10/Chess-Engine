@@ -41,32 +41,6 @@ public abstract class Piece implements Cloneable {
 		// setAvailablePositions(chessBoard);
 	}
 
-	// public int move(String toPosition, List<Piece> graveyard) {
-	// int ans = -1;
-	// if (!isDead()) {
-	//
-	// if (hasMoveTo(toPosition)) {
-	//
-	// // if this position has an enemy , then we send it to the grave
-	// // yard
-	// if (getSquareStatus(toPosition) == Tile.HAS_ENEMY) {
-	// boardMap.get(toPosition).getPiece()
-	// .sendToGraveyard(graveyard);
-	// ans = Move.ATTACK;
-	// } else {
-	// ans = Move.MOVE;
-	// }
-	// boardMap.get(currentPosition).setPiece(null);
-	// currentPosition = toPosition;
-	// // setAvaliablePositions must be called for all pieces.
-	// // setAvailablePositions();
-	// // move is completed
-	// }
-	//
-	// }
-	// // move isn't completed
-	// return ans;
-	// }
 
 	public abstract void setLegalMoves();
 
@@ -109,25 +83,6 @@ public abstract class Piece implements Cloneable {
 		return x > 72 || x < 65 || y < 1 || y > 8;
 	}
 
-	// public int getSquareStatus(String squarePosition) {
-	// Tile tile = boardMap.get(squarePosition);
-	// Piece piece = tile.getPiece();
-	// if (piece == null) {
-	// return Tile.HAS_NO_PIECE;
-	// }
-	// // System.out.println(this.armyType + " " + piece);
-	//
-	// // if the piece has the same color of "this" piece
-	// if (this.armyType == piece.armyType) {
-	// return Tile.HAS_ALLY;
-	// }
-	//
-	// // if the piece has different color of "this" piece
-	// else {
-	// return Tile.HAS_ENEMY;
-	// }
-	// // if object is not a piece , then it's a free square
-	// }
 
 	protected String translate(String currPosition, int dx, int dy) {
 		int x = (int) currPosition.charAt(0) + dx;
@@ -161,16 +116,15 @@ public abstract class Piece implements Cloneable {
 	}
 
 	public Move hasMoveTo(String position) {
-		for (Move m : getLegalMoves()) {
-			if (m.getToPosition().equals(position)) {
-				return m;
+		if (getLegalMoves() != null) {
+			for (Move m : getLegalMoves()) {
+				if (m.getToPosition().equals(position)) {
+					return m;
+				}
 			}
 		}
+
 		return null;
 	}
 
-	@Override
-	public String toString() {
-		return getClass().getName() + " " + currentPosition;
-	}
 }

@@ -2,16 +2,18 @@ package player;
 
 import java.util.List;
 
+import javax.swing.JPanel;
+
 import chessBoard.ChessBoard;
 import chessBoard.Move;
 import pieces.Piece;
 
-public class AlphaBeta implements MoveStartegy {
-
+public class Minimax implements MoveStartegy {
 	private BoardEvaluator evaluator;
 
-	public AlphaBeta() {
-		evaluator = new BoardEvaluator();
+	public Minimax() {
+		// TODO Auto-generated constructor stub
+		this.evaluator = new BoardEvaluator();
 	}
 
 	@Override
@@ -33,10 +35,8 @@ public class AlphaBeta implements MoveStartegy {
 				boardCopy.switchPlayers();
 				currentValue = boardCopy.currentPlayer()
 						.getArmyType() == Piece.WHITE_ARMY
-								? min(boardCopy, Integer.MIN_VALUE,
-										Integer.MAX_VALUE, depth - 1)
-								: max(boardCopy, Integer.MIN_VALUE,
-										Integer.MAX_VALUE, depth - 1);
+								? min(boardCopy, depth - 1)
+								: max(boardCopy, depth - 1);
 				if (boardCopy.currentPlayer().getArmyType() == Piece.WHITE_ARMY
 						&& currentValue >= highestSeenValue) {
 					highestSeenValue = currentValue;
@@ -54,7 +54,7 @@ public class AlphaBeta implements MoveStartegy {
 		return bestMove;
 	}
 
-	private int min(ChessBoard board, int α, int β, int depth) {
+	private int min(final ChessBoard board, final int depth) {
 		if (depth == 0 /* || isEndGameScenario(board) */) {
 			return this.evaluator.evaluate(board, depth);
 		}
@@ -67,20 +67,16 @@ public class AlphaBeta implements MoveStartegy {
 			move.makeMove(boardCopy.getMap(), boardCopy.opponentPlayer());
 			if (move.isDone()) {
 				boardCopy.switchPlayers();
-				int currentValue = max(boardCopy, α, β, depth - 1);
-				if (currentValue < lowestSeenValue) {
+				final int currentValue = max(boardCopy, depth - 1);
+				if (currentValue <= lowestSeenValue) {
 					lowestSeenValue = currentValue;
-				}
-				β = Math.min(β, currentValue);
-				if (β <= α) { // α cut-off
-					break;
 				}
 			}
 		}
 		return lowestSeenValue;
 	}
 
-	private int max(ChessBoard board, int α, int β, int depth) {
+	private int max(final ChessBoard board, final int depth) {
 		if (depth == 0 /* || isEndGameScenario(board) */) {
 			return this.evaluator.evaluate(board, depth);
 		}
@@ -93,17 +89,12 @@ public class AlphaBeta implements MoveStartegy {
 			move.makeMove(boardCopy.getMap(), boardCopy.opponentPlayer());
 			if (move.isDone()) {
 				boardCopy.switchPlayers();
-				int currentValue = min(boardCopy, α, β, depth - 1);
-				if (currentValue > highestSeenValue) {
+				final int currentValue = min(boardCopy, depth - 1);
+				if (currentValue >= highestSeenValue) {
 					highestSeenValue = currentValue;
-				}
-				α = Math.max(α, currentValue);
-				if (β <= α) { // β cut-off
-					break;
 				}
 			}
 		}
 		return highestSeenValue;
 	}
-
 }

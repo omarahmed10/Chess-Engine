@@ -15,15 +15,16 @@ public class Board extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static PieceMovmentSound pieceMovmentSound;
+	private ChessBoard chessBoard;
 
 	protected Board() {
 		setLayout(null);
 		pieceMovmentSound = new PieceMovmentSound();
-		new ChessBoard(this,PlayerType.HUMAN);
+		chessBoard = new ChessBoard(this, PlayerType.COMPUTER);
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) {
 		ChessTiles.drawTiles(g);
 	}
 

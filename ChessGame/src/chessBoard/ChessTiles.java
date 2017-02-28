@@ -23,7 +23,7 @@ public class ChessTiles {
 	/**
 	 * this array is used for simplicity.
 	 */
-	private final static int arr[] = { 8, 7, 6, 5, 4, 3, 2, 1 };
+	final static int arr[] = { 8, 7, 6, 5, 4, 3, 2, 1 };
 	private static Map<String, Tile> allTiles = new HashMap<String, Tile>();
 
 	public static void createSkeletonBoard(ChessBoard Parent,
@@ -150,9 +150,13 @@ public class ChessTiles {
 		return allTiles;
 	}
 
-	public static int getSquareStatus(Piece requiredToMove,
-			String squarePosition) {
-		Tile tile = allTiles.get(squarePosition);
+	public void setNewBoard(Map<String, Tile> boardMap) {
+		allTiles = boardMap;
+	}
+
+	public static int getTileStatus(Piece requiredToMove, String squarePosition,
+			Map<String, Tile> map) {
+		Tile tile = map.get(squarePosition);
 		Piece piece = tile.getPiece();
 		if (piece == null) {
 			return Tile.HAS_NO_PIECE;
@@ -169,6 +173,11 @@ public class ChessTiles {
 			return Tile.HAS_ENEMY;
 		}
 		// if object is not a piece , then it's a free square
+	}
+
+	public static int getSquareStatus(Piece requiredToMove,
+			String squarePosition) {
+		return getTileStatus(requiredToMove, squarePosition, allTiles);
 	}
 
 	public static void drawTiles(Graphics g) {

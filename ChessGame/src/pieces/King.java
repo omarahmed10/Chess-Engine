@@ -13,14 +13,19 @@ import player.Player;
 
 public class King extends Piece {
 
-	public King(String initialPosition, int armyType, Point myCoordinate, Image pieceImage) {
+	public King(String initialPosition, int armyType, Point myCoordinate,
+			Image pieceImage) {
 		super(initialPosition, armyType, myCoordinate, pieceImage);
 		pieceValue = 10000;
 	}
 
 	@Override
 	public void setLegalMoves() {
-		availableMoves.clear();
+		if (availableMoves == null) {
+			availableMoves = new ArrayList<Move>();
+		} else {
+			availableMoves.clear();
+		}
 
 		final int movementFactor = 1;
 
@@ -31,7 +36,8 @@ public class King extends Piece {
 				// The square available must not be out of bounds
 				// if the square is free or has an enemy (hasn't an ally
 				// piece) , then we can add this position
-				if (!isOutOfBounds(position) && ChessTiles.getSquareStatus(this, position) != Tile.HAS_ALLY) {
+				if (!isOutOfBounds(position) && ChessTiles.getSquareStatus(this,
+						position) != Tile.HAS_ALLY) {
 					availableMoves.add(new Move(this, position));
 				}
 			}
@@ -48,7 +54,8 @@ public class King extends Piece {
 
 	// Stalemate is when the king is not checked and there is no legal move to
 	// any piece
-	public boolean isStalemate(Map<String, Tile> boardMap , Player opponentPlayer) {
+	public boolean isStalemate(Map<String, Tile> boardMap,
+			Player opponentPlayer) {
 
 		if (!isChecked(boardMap)) {
 
@@ -58,12 +65,14 @@ public class King extends Piece {
 					// if there is at least one piece in this army has at least
 					// one legal move that cause no checking for this army's
 					// king , then it is not a stalemate
-					
-					if (piece.getArmyType() == this.armyType && !piece.getLegalMoves().isEmpty()) {
+
+					if (piece.getArmyType() == this.armyType
+							&& !piece.getLegalMoves().isEmpty()) {
 						for (Move move : piece.getLegalMoves()) {
 							move.doMove(opponentPlayer);
 
 							if (!isChecked(boardMap)) {
+								move.undoMove(opponentPlayer);
 								return false;
 							} else {
 								move.undoMove(opponentPlayer);
@@ -79,7 +88,8 @@ public class King extends Piece {
 		return false;
 	}
 
-	public boolean isCheckmate(Map<String, Tile> boardMap , Player opponentPlayer) {
+	public boolean isCheckmate(Map<String, Tile> boardMap,
+			Player opponentPlayer) {
 		List<Piece> checkers = getCheckers(boardMap);
 
 		if (isChecked(boardMap)) {
@@ -87,22 +97,24 @@ public class King extends Piece {
 
 				for (String tilePosition : boardMap.keySet()) {
 					if (boardMap.get(tilePosition).hasPiece()
-							&& boardMap.get(tilePosition).getPiece().getArmyType() == this.getArmyType()) {
+							&& boardMap.get(tilePosition).getPiece()
+									.getArmyType() == this.getArmyType()) {
 
 						Piece defender = boardMap.get(tilePosition).getPiece();
 
 						// if the defender can kill the checker
 						Move m = defender.hasMoveTo(checker.getPosition());
 
-						if (m != null)
+						if (m != null) {
 							m.doMove(opponentPlayer);
 
-						if (!isChecked(boardMap)) {
-							return false;
-						} else {
-							m.undoMove(opponentPlayer);
+							if (!isChecked(boardMap)) {
+								m.undoMove(opponentPlayer);
+								return false;
+							} else {
+								m.undoMove(opponentPlayer);
+							}
 						}
-
 						// else try all moves
 						for (Move move : defender.getLegalMoves()) {
 							move.doMove(opponentPlayer);
@@ -135,7 +147,8 @@ public class King extends Piece {
 				// if the piece is enemy and has the king's position in its
 				// available positions , then the king is checked
 
-				if (piece.getArmyType() != this.armyType && piece.hasMoveTo(getPosition()) != null) {
+				if (piece.getArmyType() != this.armyType
+						&& piece.hasMoveTo(getPosition()) != null) {
 					checkers.add(piece);
 				}
 			}
@@ -144,4 +157,12 @@ public class King extends Piece {
 		return checkers;
 	}
 
+	@Override
+	public String toString() {
+		int n = armyType;
+		if (n == -1) {
+			n = 0;
+		}
+		return n + "K ";
+	}
 }
